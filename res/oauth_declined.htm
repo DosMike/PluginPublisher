@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth2 declined</title>
+    <style type="text/css">
+		@keyframes headeranim {
+			from {background-position-x: 0em;}
+			to {background-position-x: -4.3em;}
+		}
+        * {
+            font-family: Arial;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+        body {
+            background: #e0e0e0;
+        }
+        #head {
+            background: #ff9326;
+			background: repeating-linear-gradient(-45deg, #ff9326 0, #ff9326 1.5em,#ffe000 1.5em,#ffe000 3em);
+			animation: 5s headeranim linear infinite;
+            line-height: 1.5em;
+            font-size: 2em;
+            height: 1.5em;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: -6em;
+            padding-left: 1em;
+            color: #00000;
+            box-shadow: 0 0 5px 2px rgba(0,0,0,0.5);
+        }
+        #content {
+            background: #ffffff;
+            width: 786px;
+            min-height: 5em;
+            margin: auto auto;
+            margin-top: 50vh;
+            transform: translate(0, -50%);
+            padding: .5em;
+            box-shadow: 0 0 7px 2px rgba(0,0,0,0.3);
+        }
+
+    </style>
+    <script type="text/javascript">
+        function closeMe () {
+            console.log("closing...");
+            var ww = window.open('','_self');
+            ww.close();
+        }
+        function delay () {
+            window.setTimeout(closeMe, 100);
+        }
+        window.addEventListener("load", delay);
+
+    </script>
+</head>
+<body>
+<div id="head">
+    ${APPLICATION_NAME} - Authorization Declined
+</div>
+<div id="content">
+    <h2>Lawful good!</h2>
+    <p>Thank you for properly declining the authorization request.</p>
+    <p>I mean you could have just closed the window.</p>
+    <p>Anyways I hope you have a wonderful day, even though you shut me down. &#x1F60A;</p>
+</div>
+</body>
+</html>

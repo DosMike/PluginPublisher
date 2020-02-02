@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth2 confirmed</title>
+    <style type="text/css">
+		@keyframes headeranim {
+			from {background-position-y: 0em;}
+			to {background-position-y: -3em;}
+		}
+        * {
+            font-family: Arial;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+        body {
+            background: #e0e0e0;
+        }
+        #head {
+			font-size: 2em;
+            height: 1.5em;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+			overflow: hidden;
+            box-shadow: 0 0 5px 2px rgba(0,0,0,0.5);
+        }
+		#animwrapper {
+			background: #00ff00;
+			background: linear-gradient(0deg, #00ff00 0, #009600 1.5em, #00ff00 2.7em, #00ff00 3em);
+			animation: 5s headeranim linear infinite;
+			line-height: 1.5em;
+            height: 3em;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding-left: 1em;
+            color: #000000;
+		}
+        #content {
+            background: #ffffff;
+            width: 786px;
+            min-height: 5em;
+            margin: auto auto;
+            margin-top: 50vh;
+            transform: translate(0, -50%);
+            padding: .5em;
+            box-shadow: 0 0 7px 2px rgba(0,0,0,0.3);
+        }
+
+    </style>
+    <script type="text/javascript">
+        function reposti () {
+            var http = new XMLHttpRequest();
+            var a = document.location.hash.substring(1).split('&');
+            document.location.hash='';
+            var data = {};
+            a.filter(e=>e.length>0)
+            .map(e=>{
+                let i = e.indexOf('=');
+                var x = [e.substring(0,i), e.substring(i+1)];
+                return x;
+            }).forEach(e=>{
+                console.log(e);
+                data[e[0]] = decodeURIComponent(e[1]);
+            });
+            http.open('POST', document.location.search, true);
+            http.setRequestHeader('X-Auth-Confirm', 'Yes');
+            http.send(JSON.stringify(data));
+        }
+        function general () {
+            window.setTimeout(reposti, 1);
+        }
+        window.addEventListener("load", general);
+    </script>
+</head>
+<body>
+<div id="head"><div id="animwrapper">
+    ${APPLICATION_NAME} - Access Granted
+</div></div>
+<div id="content">
+    <h2>Login successful!</h2>
+    <p>Thank you for using my Plugin Publisher</p>
+    <p>(I can't close this window automatically, sorry.)</p>
+    ${DEAUTH_HINT}
+</div>
+</body>
+</html>

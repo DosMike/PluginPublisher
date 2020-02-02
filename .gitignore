@@ -1,0 +1,5 @@
+lib/**
+out/**
+*.iml
+*.jar
+*.bat
