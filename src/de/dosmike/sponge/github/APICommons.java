@@ -3,13 +3,10 @@ package de.dosmike.sponge.github;
 import com.itwookie.utils.Request;
 import de.dosmike.sponge.limiter.XRateLimit;
 import de.dosmike.sponge.pluginpublisher.Arguments;
-import de.dosmike.sponge.pluginpublisher.Executable;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.function.Consumer;
 
 public class APICommons {

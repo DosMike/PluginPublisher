@@ -37,6 +37,8 @@ wellcome)
   --dc <ChannelID>  - The channel id to post in
   --dh <String>     - An additional line of text that will be prepended to the
                       description, allowing you to @mention roles and users.
+                      This is optional. If omitted only the description will be
+                      used.
   --desc <File>     - Specify a MarkDown file that holds the description for
                       this release. This is optional - A prompt will open, if
                       no file was specified. The same text will be posted on

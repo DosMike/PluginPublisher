@@ -1,12 +1,13 @@
 package de.dosmike.sponge.pluginpublisher;
 
-import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -130,6 +131,14 @@ public class Arguments {
             if (oreAsset == null)
                 throw new IllegalArgumentException("Missing argument --oa");
         }
+        if (discordAPIKey != null || discordServer != null || discordChannel != null) {
+            if (discordAPIKey == null)
+                throw new IllegalArgumentException("Missing argument --dk");
+            if (discordServer == null)
+                throw new IllegalArgumentException("Missing argument --ds");
+            if (discordChannel == null)
+                throw new IllegalArgumentException("Missing argument --dc");
+        }
         if (releaseDescriptionString == null) {
             if (Desktop.isDesktopSupported()) {
                 TextInputPrompt prompt = new TextInputPrompt("Release Description", "<html>Please enter the Release description.<br>The text you input supports the Markdown syntax");
@@ -194,6 +203,8 @@ public class Arguments {
         System.out.println("  --dc <ChannelID>  - The channel id to post in");
         System.out.println("  --dh <String>     - An additional line of text that will be prepended to the");
         System.out.println("                      description, allowing you to @mention roles and users.");
+        System.out.println("                      This is optional. If omitted only the description will be");
+        System.out.println("                      used.");
         System.out.println("  --desc <File>     - Specify a MarkDown file that holds the description for");
         System.out.println("                      this release. This is optional - A prompt will open, if");
         System.out.println("                      no file was specified. The same text will be posted on");

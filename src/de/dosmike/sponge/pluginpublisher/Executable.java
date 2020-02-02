@@ -125,10 +125,17 @@ public class Executable {
                 String fullMessage = (header != null) ? (header + "\n" + Arguments.releaseDescriptionString) : Arguments.releaseDescriptionString;
                 channel.sendMessage(fullMessage).complete();
             } finally {
-                jda.shutdown();
+                jda.shutdownNow();
+                while (!jda.getStatus().equals(JDA.Status.SHUTDOWN)) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ignore) { }
+                }
+                System.out.println("JDA shutdown");
             }
         }
 
+        System.exit(0); //Is JDA lingering?
     }
 
 }

@@ -3,8 +3,8 @@ package de.dosmike.sponge.oreapi;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.xml.internal.org.jvnet.staxex.Base64EncoderStream;
-import de.dosmike.sponge.utils.CachingCollection;
 import de.dosmike.sponge.oreapi.v2.*;
+import de.dosmike.sponge.utils.CachingCollection;
 import org.jetbrains.annotations.Nullable;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -15,8 +15,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
