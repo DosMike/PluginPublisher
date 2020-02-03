@@ -21,19 +21,6 @@ import java.util.regex.Pattern;
 
 public class Executable {
 
-    //Sync Steps:
-    // -> Copy specified files to the git directory
-    // -> Add and Commit files
-    // -> Compile or collect release files
-    // call script; maybe bash or batch?
-    //Publish Steps:
-    // -> Create release on GitHub
-    // -> Create release on Ore
-    // -> Notify Respective Discord Channel
-    // ore-get ore api implementation, jdiscord
-    // git libraries won't usually help with creating tags, so that'll be fun
-    // ask for a Release message and go, cache release version from mcmod.info? -> gson? mjson?
-
     public static void main(String[] args) {
         try {
             Arguments.parse(args);

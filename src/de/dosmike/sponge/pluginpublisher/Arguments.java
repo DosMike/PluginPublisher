@@ -54,11 +54,11 @@ public class Arguments {
                 case "--gt":
                     gitTag = args[i+1];
                     break;
-                case "--gc":
-                    gitCommitish = args[i+1];
-                    break;
                 case "--gn":
                     gitTagFull = args[i+1];
+                    break;
+                case "--gc":
+                    gitCommitish = args[i+1];
                     break;
                 case "--ga": {
                     Path path = Paths.get(args[i + 1]);
@@ -82,6 +82,7 @@ public class Arguments {
                     if (Files.notExists(path))
                         throw new FileNotFoundException("Could not find Ore asset: "+ args[i + 1]);
                     oreAsset = path;
+                    break;
                 }
                 case "--dk":
                     discordAPIKey = args[i+1];
@@ -111,6 +112,8 @@ public class Arguments {
                 case "/?":
                     printHelp();
                     System.exit(0);
+                default:
+                    throw new IllegalArgumentException("Unsupported Argument: "+args[i]);
             }
         }
         //validate args read
