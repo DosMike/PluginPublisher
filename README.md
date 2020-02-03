@@ -109,18 +109,41 @@ description is necessary.
 ## Example in a script:
 
 **Full exmaple:**  
+
 `
 java -jar PluginPublisher.jar --gk gitApiKey --gs DosMike/VillagerShops --gc master --gt 2.4 --gn "Release Build 2.4" --ga VillagerShops-2.4.zip --ok oreApiKey --op vshop --oc Release --oa VillagerShops-2.4.jar --dk discordApiKey --ds 342942444288999435 --dc 352760019873169408 --dh "@VillagerShops Version 2.4 released on Ore and GitHub" --desc ReleaseNotes-2.4.md
 `  
 This example should run fully automatic.
 
 **Minimal example:**  
+
 `
 java -jar PluginPublisher.jar --gk gitApiKey --gs DosMike/VillagerShops --gt 2.4 --ok oreApiKey --op vshop --oa VillagerShops-2.4.jar --dk discordApiKey --ds 342942444288999435 --dc 352760019873169408
 `  
 This example will require user input because --desc was not specified. A new 
 window will open with a small text input area. If you cancel the input nothing
 will happen.
+
+**Gradle task example:**
+```
+task zPublish(type: Exec, group:'_Plugin', dependsOn:uberJar) {
+    file('..\\PluginPublisher\\.apikeys').readLines().each() {
+        def (key, value) = it.tokenize('=')
+        environment key, value
+    }
+    def spp_git_slug='DosMike/VillagerShops'
+    def spp_discord_server='342942444288999435'
+    def spp_discord_channel='352760019873169408'
+    def spp_discord_mention='<@&644225680833249320>'
+    def spp_discord_header="${spp_discord_mention} Version ${version} released on Ore and GitHub"
+    def outputFile = "build\\libs\\${jar.archiveName}"
+    commandLine 'java', '-jar', '..\\PluginPublisher\\PluginPublisher.jar',
+            '--gk', 'gitkey', '--ok', 'orekey', '--dk', 'discordkey',
+            '--gs', spp_git_slug, '--gt', version, '--gn', "Release Build ${version}", '--ga', outputFile,
+            '--op', pluginid, '--oa', outputFile,
+            '--ds', spp_discord_server, '--dc', spp_discord_channel, '--dh', spp_discord_header
+}
+```
 
 # License
 ### This Project is MIT Licensed
