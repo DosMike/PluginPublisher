@@ -25,7 +25,7 @@ public class Base64StreamEncoder extends OutputStream {
         buffered += 8;
         while (buffered >= 6) {
             buffered -= 6;
-            int b64 = 0b00111111 << buffered;
+            int b64 = 0b00111111 & (buffer >> buffered);
             wrapped.write(dictionary[b64]);
             if (--modulo3<0) modulo3=2;
         }

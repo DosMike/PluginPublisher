@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Version(value="1.0.2", build="20030701")
 public class Executable {
 
     public static void main(String[] args) {

@@ -120,7 +120,7 @@ public class Arguments {
         if (gitTagFull == null && gitTag != null) gitTagFull = "Automatic Release "+gitTag;
         if (gitAPIKey != null || gitTag != null || gitSlug != null) {
             if (gitAPIKey == null)
-                throw new IllegalArgumentException("Missing argument --gt");
+                throw new IllegalArgumentException("Missing argument --gk");
             if (gitTag == null)
                 throw new IllegalArgumentException("Missing argument --gt");
             if (gitSlug == null)
@@ -174,7 +174,9 @@ public class Arguments {
     }
 
     public static void printHelp() {
+        Version version = Executable.class.getAnnotation(Version.class);
         System.out.println(" Usage: java -jar this.jar -FLAGS");
+        System.out.println("You are using Version "+version.value()+" (build "+version.build()+")");
         System.out.println("This application will create a new release on (optionally) GitHub, Sponge and");
         System.out.println("notify a Discord server. Sorry, GitLab is currently not supported (PRs are");
         System.out.println("wellcome)");

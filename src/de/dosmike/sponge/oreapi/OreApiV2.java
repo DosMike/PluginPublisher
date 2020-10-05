@@ -2,9 +2,10 @@ package de.dosmike.sponge.oreapi;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.xml.internal.org.jvnet.staxex.Base64EncoderStream;
 import de.dosmike.sponge.oreapi.v2.*;
+import de.dosmike.sponge.utils.Base64StreamEncoder;
 import de.dosmike.sponge.utils.CachingCollection;
+import okhttp3.MultipartBody;
 import org.jetbrains.annotations.Nullable;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -240,8 +241,9 @@ public class OreApiV2 implements AutoCloseable {
         authenticate();
         limiter.takeRequest();
         try {
-            String boundary="=====ENTRY_SEPARATOR_"+ UUID.randomUUID().toString();
+            String boundary="--------------------ENTRY_SEPARATOR_"+ UUID.randomUUID().toString();
             String jsonPluginInfo = info.toJson().toString();
+            System.out.println(jsonPluginInfo);
             String headersEntry1 = "Content-Disposition: form-data; name=\"plugin-info\"\r\n" +
                     "Content-Type: application/json;charset=utf-8\r\n" +
                     "\r\n";
@@ -277,7 +279,7 @@ public class OreApiV2 implements AutoCloseable {
             InputStream fis = Files.newInputStream(file);
 //            Base64.getEncoder().wrap(connection.getOutputStream());
             // ^ can only write padding by closing the stream
-            OutputStream base64Stream = new Base64EncoderStream(connection.getOutputStream());
+            OutputStream base64Stream = new Base64StreamEncoder(connection.getOutputStream());
             byte[] buffer = new byte[1024]; int r, count=0;
             while((r=fis.read(buffer))>=0) {
                 base64Stream.write(buffer,0,r);

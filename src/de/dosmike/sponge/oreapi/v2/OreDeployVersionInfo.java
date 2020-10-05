@@ -13,7 +13,7 @@ public class OreDeployVersionInfo {
     public static class Builder {
         OreDeployVersionInfo info;
         private Builder() {
-
+            info = new OreDeployVersionInfo();
         }
         public Builder setCreateForumPost(boolean create) {
             info.createForumPost = create;
