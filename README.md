@@ -1,6 +1,6 @@
 # Sponge Plugin Publisher
-This tool is mean for Continuous Deployment of Sponge Plugins on GitHub and Ore with
-automatic Discord notifications.
+
+This tool is mean for Continuous Deployment of Sponge Plugins on GitHub and Ore with automatic Discord notifications.
 
 Each component is optional an can be skipped.
 
@@ -46,56 +46,53 @@ wellcome)
 ```
 
 ## Setting up GitHub
-* Go to https://github.com/settings/tokens and generate a new Token with `repo` 
+
+* Go to https://github.com/settings/tokens and generate a new Token with `repo`
   scope.
-* Add the token as Environment variable (either though scripts, process 
-  builders or the system itself)
+* Add the token as Environment variable (either though scripts, process builders or the system itself)
 * Enable git usage by specifying `--gk`
 * Go to your repository and copy the Slug to `--gs`   
-  *Example:* `https://github.com/DosMike/VillagerShops/` -<small>Slug</small>-> 
+  *Example:* `https://github.com/DosMike/VillagerShops/` -<small>Slug</small>->
   `DosMike/VillagerShops`
-* Add the release tag with `--gt` (Plugin version recommended) and a full 
-  release name with `--gn`
+* Add the release tag with `--gt` (Plugin version recommended) and a full release name with `--gn`
 * You can add as many files as you want to attach to the release by repeating
   `--ga file`
 
-You only need one GitHub API-token for all projects you want to upload with 
-this tool. **Remember that API-tokens should be treated like passwords!**
+You only need one GitHub API-token for all projects you want to upload with this tool. **Remember that API-tokens should
+be treated like passwords!**
 
 ## Setting up Ore
-* Go to your profile on https://ore.spongepowered.org/ and click the small key
-  next to your name.
+
+* Go to your profile on https://ore.spongepowered.org/ and click the small key next to your name.
 * Create a token with the `create_version` permission.
-* Now from the right side copy the Key (looks like two UUIDs with a dot in 
-  between) and add it as Environment variable (either through scripts, process
-  builders or the system itself)
+* Now from the right side copy the Key (looks like two UUIDs with a dot in between) and add it as Environment variable (
+  either through scripts, process builders or the system itself)
 * Enable ore uploads by specifying `--ok`
 * Specify the ore project id with `--op`
 * Use `--oa` to point to the plugin jar you want to upload
 
-You only need one Ore API-token for all projects you want to upload with 
-this tool. **Remember that API-tokens should be treated like passwords!**
+You only need one Ore API-token for all projects you want to upload with this tool. **Remember that API-tokens should be
+treated like passwords!**
 
 ## Setting up Discord
-For Discord integration you'll have to create and invite a bot to your server.
-You can't use an existing bot because this application requires the bots 
-API-Token to send messages, and bots don't hand those out.
-If you do not already run a custom bot, you can make and invite one, following
-[this tutorial](https://discordpy.readthedocs.io/en/latest/discord.html).
-The required permissions are `Send Messages` and `Read Message History`.
-After adding the bot to your server I recommend making it private, since you
-probably won't use the bot for anything else.
-* Go to https://discordapp.com/developers/applications, click your Application
-  and go to the Bot page.
-* After clicking `Click to reveal Token`, copy it and add it as an Environment
-  variable (either through scripts, process builders or the system itself).
+
+For Discord integration you'll have to create and invite a bot to your server. You can't use an existing bot because
+this application requires the bots API-Token to send messages, and bots don't hand those out. If you do not already run
+a custom bot, you can make and invite one, following
+[this tutorial](https://discordpy.readthedocs.io/en/latest/discord.html). The required permissions are `Send Messages`
+and `Read Message History`. After adding the bot to your server I recommend making it private, since you probably won't
+use the bot for anything else.
+
+* Go to https://discordapp.com/developers/applications, click your Application and go to the Bot page.
+* After clicking `Click to reveal Token`, copy it and add it as an Environment variable (either through scripts, process
+  builders or the system itself).
 * Enable the discord notifications by specifying `--dk`
 * Specify the guild id (server id) with `--ds` and the channel id with `--dc`
 * If you want to mention a role for this release you can add a message with
   `--dh`. This message supports @mentioning roles and users.
 
-If you can't right-click a server or channel to `Copy ID`, go into your 
-Discord settings and enable `Developer Mode` in `Appearance`.
+If you can't right-click a server or channel to `Copy ID`, go into your Discord settings and enable `Developer Mode`
+in `Appearance`.
 
 You only need one Bot API-token for all notifications you want to send with this tool. **Remember that API-tokens should
 be treated like passwords!**
@@ -126,18 +123,18 @@ Configure the plugin with the PluginPublisher config
 
 ```groovy
 PluginPublisher {
-  oreAPIKey = !readFromFile !
-          oreAsset = Paths.get("build\\libs\\${jar.archiveFileName}")
+  oreAPIKey = !_readFromFile_ !;
+  oreAsset = Paths.get("build\\libs\\${jar.archiveFileName}")
   oreChannel = "Release"
   oreProject = pluginid
-  gitAPIKey = !readFromFile !
-          gitAssets = Paths.get("build\\libs\\${jar.archiveFileName}")
+  gitAPIKey = !_readFromFile_ !;
+  gitAssets = Paths.get("build\\libs\\${jar.archiveFileName}")
   gitCommitish = "master"
   gitSlug = "DosMike/VillagerShops"
   gitTag = project.version
   gitTagFull = "Release Build " + project.version
-  discordAPIKey = !readFromFile !
-          discordServer = "123456789" //id as string
+  discordAPIKey = !_readFromFile_ !;
+  discordServer = "123456789" //id as string
   discordChannel = "123456789" //id as string
   //role mentions are formatted like this: <@&roleID>
   discordHeader = "<@&123456789> A new version for ${project.name} just released:"
@@ -156,14 +153,13 @@ java -jar PluginPublisher.jar --gk gitApiKey --gs DosMike/VillagerShops --gc mas
 `  
 This example should run fully automatic.
 
-**Minimal example:**  
+**Minimal example:**
 
 `
 java -jar PluginPublisher.jar --gk gitApiKey --gs DosMike/VillagerShops --gt 2.4 --ok oreApiKey --op vshop --oa VillagerShops-2.4.jar --dk discordApiKey --ds 342942444288999435 --dc 352760019873169408
 `  
-This example will require user input because --desc was not specified. A new 
-window will open with a small text input area. If you cancel the input nothing
-will happen.
+This example will require user input because --desc was not specified. A new window will open with a small text input
+area. If you cancel the input nothing will happen.
 
 **Gradle task example:**
 
@@ -178,36 +174,39 @@ task zPublish(type: Exec, group: '_Plugin', dependsOn: uberJar) {
   def spp_discord_channel = '352760019873169408'
   def spp_discord_mention = '<@&644225680833249320>'
   def spp_discord_header = "${spp_discord_mention} Version ${version} released on Ore and GitHub"
-    def outputFile = "build\\libs\\${jar.archiveName}"
-    commandLine 'java', '-jar', '..\\PluginPublisher\\PluginPublisher.jar',
-            '--gk', 'gitkey', '--ok', 'orekey', '--dk', 'discordkey',
-            '--gs', spp_git_slug, '--gt', version, '--gn', "Release Build ${version}", '--ga', outputFile,
-            '--op', pluginid, '--oa', outputFile,
-            '--ds', spp_discord_server, '--dc', spp_discord_channel, '--dh', spp_discord_header
+  def outputFile = "build\\libs\\${jar.archiveName}"
+  commandLine 'java', '-jar', '..\\PluginPublisher\\PluginPublisher.jar',
+          '--gk', 'gitkey', '--ok', 'orekey', '--dk', 'discordkey',
+          '--gs', spp_git_slug, '--gt', version, '--gn', "Release Build ${version}", '--ga', outputFile,
+          '--op', pluginid, '--oa', outputFile,
+          '--ds', spp_discord_server, '--dc', spp_discord_channel, '--dh', spp_discord_header
 }
 ```
 
 # License
+
 ### This Project is MIT Licensed
+
 > Copyright 2020 DosMike
-> 
+>
 > Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-> 
+>
 > The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-> 
+>
 > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # Libraries
 
 ## [Java Discord API](https://github.com/DV8FromTheWorld/JDA/)
+
 > Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
-> 
+>
 > Licensed under the Apache License, Version 2.0 (the "License");
 > you may not use this file except in compliance with the License.
 > You may obtain a copy of the License at
-> 
+>
 > > http://www.apache.org/licenses/LICENSE-2.0
-> 
+>
 > Unless required by applicable law or agreed to in writing, software
 > distributed under the License is distributed on an "AS IS" BASIS,
 > WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -215,14 +214,15 @@ task zPublish(type: Exec, group: '_Plugin', dependsOn: uberJar) {
 > limitations under the License.
 
 ## [Log4j 2](https://logging.apache.org/log4j/2.x/)
+
 > Copyright 1999-2005 The Apache Software Foundation
-> 
+>
 > Licensed under the Apache License, Version 2.0 (the "License");
 > you may not use this file except in compliance with the License.
 > You may obtain a copy of the License at
-> 
+>
 > > http://www.apache.org/licenses/LICENSE-2.0
-> 
+>
 > Unless required by applicable law or agreed to in writing, software
 > distributed under the License is distributed on an "AS IS" BASIS,
 > WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
