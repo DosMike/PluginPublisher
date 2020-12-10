@@ -1,5 +1,7 @@
 package de.dosmike.sponge.pluginpublisher;
 
+import de.dosmike.sponge.pluginpublisher.gradle.GradleConfiguration;
+
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -113,36 +115,61 @@ public class Arguments {
                     printHelp();
                     System.exit(0);
                 default:
-                    throw new IllegalArgumentException("Unsupported Argument: "+args[i]);
+                    throw new IllegalArgumentException("Unsupported Argument: " + args[i]);
             }
         }
+        validate(false);
+    }
+
+    public static void fromGradleConfiguration(GradleConfiguration config) {
+        gitAPIKey = config.gitAPIKey;
+        gitSlug = config.gitSlug;
+        gitTag = config.gitTag;
+        gitTagFull = config.gitTagFull;
+        gitCommitish = config.gitCommitish;
+        gitAssets = config.gitAssets;
+        oreProject = config.oreProject;
+        oreChannel = config.oreChannel;
+        oreAPIKey = config.oreAPIKey;
+        oreAsset = config.oreAsset;
+        discordAPIKey = config.discordAPIKey;
+        discordServer = config.discordServer;
+        discordChannel = config.discordChannel;
+        discordHeader = config.discordHeader;
+        releaseDescriptionString = config.releaseDescriptionString;
+        validate(true);
+    }
+
+    public static void validate(boolean throwDescriptionNull) {
         //validate args read
-        if (gitTagFull == null && gitTag != null) gitTagFull = "Automatic Release "+gitTag;
+        if (gitTagFull == null && gitTag != null) gitTagFull = "Automatic Release " + gitTag;
         if (gitAPIKey != null || gitTag != null || gitSlug != null) {
             if (gitAPIKey == null)
-                throw new IllegalArgumentException("Missing argument --gk");
+                throw new IllegalArgumentException("Missing Git API Key");
             if (gitTag == null)
-                throw new IllegalArgumentException("Missing argument --gt");
+                throw new IllegalArgumentException("Missing Git Commitish");
             if (gitSlug == null)
-                throw new IllegalArgumentException("Missing argument --gs");
+                throw new IllegalArgumentException("Missing Git Project Slug");
         }
         if (oreAPIKey != null || oreProject != null || oreAsset != null) {
             if (oreAPIKey == null)
-                throw new IllegalArgumentException("Missing argument --ok");
+                throw new IllegalArgumentException("Missing Ore API Key");
             if (oreProject == null)
-                throw new IllegalArgumentException("Missing argument --op");
+                throw new IllegalArgumentException("Missing Ore Project Slug");
             if (oreAsset == null)
-                throw new IllegalArgumentException("Missing argument --oa");
+                throw new IllegalArgumentException("Missing Ore Asset Path");
         }
         if (discordAPIKey != null || discordServer != null || discordChannel != null) {
             if (discordAPIKey == null)
-                throw new IllegalArgumentException("Missing argument --dk");
+                throw new IllegalArgumentException("Missing Discord API Key");
             if (discordServer == null)
-                throw new IllegalArgumentException("Missing argument --ds");
+                throw new IllegalArgumentException("Missing Discord Server ID");
             if (discordChannel == null)
-                throw new IllegalArgumentException("Missing argument --dc");
+                throw new IllegalArgumentException("Missing Discord Channel ID");
         }
         if (releaseDescriptionString == null) {
+            if (throwDescriptionNull)
+                throw new IllegalArgumentException("Missing Description");
             if (Desktop.isDesktopSupported()) {
                 TextInputPrompt prompt = new TextInputPrompt("Release Description", "<html>Please enter the Release description.<br>The text you input supports the Markdown syntax");
                 prompt.waitInput();

@@ -28,19 +28,29 @@ public class Executable {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             Arguments.printHelp();
-            System.exit(1); return;
+            System.exit(1);
+            return;
         }
 
+        runFromArguments();
+
+        System.exit(0); //Is JDA lingering?
+    }
+
+    public static void runFromArguments() {
         if (Arguments.useGitHub()) try {
             System.out.println("[ GitHub ] Creating Tag...");
             ReleaseAPI githubRelease = new ReleaseAPI();
             JsonObject releaseObject = githubRelease.createReleaseTag(Arguments.gitSlug, Arguments.gitTag, Arguments.gitCommitish, Arguments.gitTagFull, Arguments.releaseDescriptionString, false, false);
             String uploadHere = releaseObject.get("upload_url").getAsString();
             for (Path path : Arguments.gitAssets) {
-                System.out.println("[ GitHub ] Uploading asset "+path.getFileName().toString()+"...");
+                System.out.println("[ GitHub ] Uploading asset " + path.getFileName().toString() + "...");
                 githubRelease.uploadAsset(uploadHere, path);
             }
-        } catch (RuntimeException e) { System.exit(1); return; }
+        } catch (RuntimeException e) {
+            System.exit(1);
+            return;
+        }
 
         if (Arguments.useOre()){
             OreApiV2 oreApi = null;
@@ -56,8 +66,7 @@ public class Executable {
                     System.err.println("Could not create version");
                     System.exit(1); return;
                 }
-            }
-            finally {
+            } finally {
                 if (oreApi!=null) oreApi.destroySession();
             }
         }
@@ -122,8 +131,6 @@ public class Executable {
                 System.out.println("JDA shutdown");
             }
         }
-
-        System.exit(0); //Is JDA lingering?
     }
 
 }
