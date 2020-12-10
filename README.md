@@ -97,18 +97,59 @@ probably won't use the bot for anything else.
 If you can't right-click a server or channel to `Copy ID`, go into your 
 Discord settings and enable `Developer Mode` in `Appearance`.
 
-You only need one Bot API-token for all notifications you want to send with 
-this tool. **Remember that API-tokens should be treated like passwords!**
+You only need one Bot API-token for all notifications you want to send with this tool. **Remember that API-tokens should
+be treated like passwords!**
 
 ## Common release description
-GitHub, Ore and Discord all use the same description. You can create a file 
-containing the description and supply it with `--desc <file>` or ignore the
-argument and write the description using an interactive prompt. Either way, a
+
+GitHub, Ore and Discord all use the same description. You can create a file containing the description and supply it
+with `--desc <file>` or ignore the argument and write the description using an interactive prompt. Either way, a
 description is necessary.
+
+## As Gradle Plugin
+
+Add the following to your `build.gradle`
+
+```groovy
+buildscript {
+  repositories {
+    maven { url "https://jitpack.io" }
+  }
+  dependencies {
+    classpath 'com.github.dosmike:pluginpublisher:development-SNAPSHOT'
+  }
+}
+apply plugin: 'com.github.dosmike.PluginPublisher'
+```
+
+Configure the plugin with the PluginPublisher config
+
+```groovy
+PluginPublisher {
+  oreAPIKey = !readFromFile !
+          oreAsset = Paths.get("build\\libs\\${jar.archiveFileName}")
+  oreChannel = "Release"
+  oreProject = pluginid
+  gitAPIKey = !readFromFile !
+          gitAssets = Paths.get("build\\libs\\${jar.archiveFileName}")
+  gitCommitish = "master"
+  gitSlug = "DosMike/VillagerShops"
+  gitTag = project.version
+  gitTagFull = "Release Build " + project.version
+  discordAPIKey = !readFromFile !
+          discordServer = "123456789" //id as string
+  discordChannel = "123456789" //id as string
+  //role mentions are formatted like this: <@&roleID>
+  discordHeader = "<@&123456789> A new version for ${project.name} just released:"
+  description = "This message is used for git, ore and discord, but only git and ore support markdown"
+}
+```
+
+and finally call the PublishPlugin task
 
 ## Example in a script:
 
-**Full exmaple:**  
+**Full exmaple:**
 
 `
 java -jar PluginPublisher.jar --gk gitApiKey --gs DosMike/VillagerShops --gc master --gt 2.4 --gn "Release Build 2.4" --ga VillagerShops-2.4.zip --ok oreApiKey --op vshop --oc Release --oa VillagerShops-2.4.jar --dk discordApiKey --ds 342942444288999435 --dc 352760019873169408 --dh "@VillagerShops Version 2.4 released on Ore and GitHub" --desc ReleaseNotes-2.4.md
@@ -125,17 +166,18 @@ window will open with a small text input area. If you cancel the input nothing
 will happen.
 
 **Gradle task example:**
-```
-task zPublish(type: Exec, group:'_Plugin', dependsOn:uberJar) {
-    file('..\\PluginPublisher\\.apikeys').readLines().each() {
-        def (key, value) = it.tokenize('=')
-        environment key, value
-    }
-    def spp_git_slug='DosMike/VillagerShops'
-    def spp_discord_server='342942444288999435'
-    def spp_discord_channel='352760019873169408'
-    def spp_discord_mention='<@&644225680833249320>'
-    def spp_discord_header="${spp_discord_mention} Version ${version} released on Ore and GitHub"
+
+```groovy
+task zPublish(type: Exec, group: '_Plugin', dependsOn: uberJar) {
+  file('..\\PluginPublisher\\.apikeys').readLines().each() {
+    def (key, value) = it.tokenize('=')
+    environment key, value
+  }
+  def spp_git_slug = 'DosMike/VillagerShops'
+  def spp_discord_server = '342942444288999435'
+  def spp_discord_channel = '352760019873169408'
+  def spp_discord_mention = '<@&644225680833249320>'
+  def spp_discord_header = "${spp_discord_mention} Version ${version} released on Ore and GitHub"
     def outputFile = "build\\libs\\${jar.archiveName}"
     commandLine 'java', '-jar', '..\\PluginPublisher\\PluginPublisher.jar',
             '--gk', 'gitkey', '--ok', 'orekey', '--dk', 'discordkey',
