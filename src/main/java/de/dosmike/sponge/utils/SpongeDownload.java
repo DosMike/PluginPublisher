@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * In the latest Sponge Update {@see https://forums.spongepowered.org/t/sponge-status-update-12th-december-2019/34368}
+ * In the latest <a href="https://forums.spongepowered.org/t/sponge-status-update-12th-december-2019/34368">Sponge Update</a>
  * the Sponge team decided that for your Plugins to be approved, the following conditions must be also be met by the project:
  * <ul>
  * <li>Downloaded content must have hard-coded SHA256 (or better) based hash checking

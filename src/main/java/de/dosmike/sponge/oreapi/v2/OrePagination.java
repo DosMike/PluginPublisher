@@ -17,7 +17,7 @@ public class OrePagination {
 
     /** generate generic query parameters for the specified page without initial
      * concatinator
-     * @return format limit=LIMIT&offset=OFFSET */
+     * @return format limit=LIMIT&amp;offset=OFFSET */
     public String getQueryPage(int page) {
         if (page < 1) throw new IllegalArgumentException("Page has to be positive integer");
         int targetoffset = (page-1)*limit;
@@ -32,7 +32,7 @@ public class OrePagination {
         return (int)Math.ceil((double)count/limit);
     }
     /** create the query for the next page (with max getLastPage()), see {@link #getQueryPage} for more info
-     * @return format limit=LIMIT&offset=OFFSET */
+     * @return format limit=LIMIT&amp;offset=OFFSET */
     public String getQueryNext() {
         int page = getPage();
         int lastPage = getLastPage();
@@ -40,7 +40,7 @@ public class OrePagination {
     }
     /** create the query for the previous page (with min page 1),
      * see {@link #getQueryPage} for more info
-     * @return format limit=LIMIT&offset=OFFSET */
+     * @return format limit=LIMIT&amp;offset=OFFSET */
     public String getQueryPrevious() {
         int page = getPage();
         return getQueryPage(page <= 2 ? 1 : page-1);

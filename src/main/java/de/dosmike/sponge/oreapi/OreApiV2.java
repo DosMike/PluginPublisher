@@ -29,9 +29,9 @@ import java.util.regex.Pattern;
 
 /**
  * Calls within this class initially block, but do not consider and Rate Limits. In order to prevent dos-ing the Ore
- * Servers it is encouraged to use the RateLimiter with <code>OreApi.waitFor(()->OreApi.Method)</code>.
+ * Servers it is encouraged to use the RateLimiter with <code>OreApi.waitFor(()-&gt;OreApi.Method)</code>.
  * If you want to perform bulk operations you should consider collecting the futures returned from
- * <code>OreApi.enqueue(()->OreApi.Method)</code> and passing your collection through
+ * <code>OreApi.enqueue(()-&gt;OreApi.Method)</code> and passing your collection through
  * <code>RateLimiter.waitForAll(collection)</code>. The resulting collection will be a list, holding order
  * of your supplied collection if applicable.
  * Note: This implementation shares a lot with the Ore-Get implementation, but is not 100% compatible due to this

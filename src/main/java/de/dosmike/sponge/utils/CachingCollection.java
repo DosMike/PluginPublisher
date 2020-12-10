@@ -12,7 +12,7 @@ public class CachingCollection<E> implements Collection<E> {
     private Collection<Expiring<E>> container;
     private long lifespan;
     /** timeSpan and timeUnit specify how long entries will be valid.
-     * Elements will be lazy-checked (removed if expired & values requested) */
+     * Elements will be lazy-checked (removed if expired &amp; values requested) */
     public CachingCollection(Collection<Expiring<E>> container, long timeSpan, TimeUnit timeUnit) {
         this.container = container;
         lifespan = timeUnit.toMillis(timeSpan);
