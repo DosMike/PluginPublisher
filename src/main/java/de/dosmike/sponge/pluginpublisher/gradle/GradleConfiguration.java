@@ -21,7 +21,7 @@ public class GradleConfiguration {
 	public String discordServer = null;
 	public String discordChannel = null;
 	public String discordHeader = null;
-	public String releaseDescriptionString = null; // user input if no file was specified
+	public String description = null; // user input if no file was specified
 
 	public String getGitAPIKey() {
 		return gitAPIKey;
@@ -143,11 +143,11 @@ public class GradleConfiguration {
 		this.discordHeader = discordHeader;
 	}
 
-	public String getReleaseDescriptionString() {
-		return releaseDescriptionString;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setReleaseDescriptionString(String releaseDescriptionString) {
-		this.releaseDescriptionString = releaseDescriptionString;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

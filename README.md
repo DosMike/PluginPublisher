@@ -103,7 +103,7 @@ GitHub, Ore and Discord all use the same description. You can create a file cont
 with `--desc <file>` or ignore the argument and write the description using an interactive prompt. Either way, a
 description is necessary.
 
-## As Gradle Plugin
+# PluginPublisher As Gradle Plugin
 
 Add the following to your `build.gradle`
 
@@ -116,35 +116,45 @@ buildscript {
     classpath 'com.github.dosmike:pluginpublisher:development-SNAPSHOT'
   }
 }
-apply plugin: 'com.github.dosmike.PluginPublisher'
+apply plugin: de.dosmike.sponge.pluginpublisher.gradle.PluginPublisherPlugin
 ```
 
-Configure the plugin with the PluginPublisher config
+There are three and a half tasks for you:
 
 ```groovy
-PluginPublisher {
-  oreAPIKey = !_readFromFile_ !;
-  oreAsset = Paths.get("build\\libs\\${jar.archiveFileName}")
-  oreChannel = "Release"
-  oreProject = pluginid
-  gitAPIKey = !_readFromFile_ !;
-  gitAssets = Paths.get("build\\libs\\${jar.archiveFileName}")
-  gitCommitish = "master"
-  gitSlug = "DosMike/VillagerShops"
-  gitTag = project.version
-  gitTagFull = "Release Build " + project.version
-  discordAPIKey = !_readFromFile_ !;
-  discordServer = "123456789" //id as string
-  discordChannel = "123456789" //id as string
-  //role mentions are formatted like this: <@&roleID>
-  discordHeader = "<@&123456789> A new version for ${project.name} just released:"
-  description = "This message is used for git, ore and discord, but only git and ore support markdown"
+task uploadToGitHub(type: de.dosmike.sponge.pluginpublisher.gradle.PublishToGitTask) {
+  configuration.apiKey = System.getenv('token')
+  configuration.slug = 'Dev/Project'
+  configuration.commitish = 'master' //default
+  configuration.tag = project.version
+  configuration.tagFull = "Release Build ${project.version}"
+  configuration.assets = jar.outputs.files
+  configuration.description = 'This is the release description for github'
+}
+task uploadToOre(type: de.dosmike.sponge.pluginpublisher.gradle.PublishToOreTask) {
+  configuration.apiKey = System.getenv('token')
+  configuration.project = pluginid
+  configuration.channel = 'Release' //default
+  configuration.asset = jar.outputs.files
+  configuration.description = 'This is the release description for ore'
+}
+task notifyDiscordChannel(type: de.dosmike.sponge.pluginpublisher.gradle.NotifyDiscordTask) {
+  configuration.apiKey = System.getenv('token')
+  configuration.server = '697133248467173467'
+  configuration.channel = '697711913001287700'
+  configuration.header = 'Header Line'
+  configuration.description = 'This is published in channel 2'
+  finalizedBy(TerminateDiscord) // should be added to the last NotifyDiscordTask
 }
 ```
 
 and finally call the PublishPlugin task
 
-## Example in a script:
+# PluginPublisher as command line tool
+
+The jar artifact can be used as command line tool. For usage information call `java -jar PluginPublisher.jar --help`.  
+Please note, that with this variant, you have to move your api keys into environment variables and pass the name of
+these to the application.
 
 **Full exmaple:**
 
@@ -161,7 +171,7 @@ java -jar PluginPublisher.jar --gk gitApiKey --gs DosMike/VillagerShops --gt 2.4
 This example will require user input because --desc was not specified. A new window will open with a small text input
 area. If you cancel the input nothing will happen.
 
-**Gradle task example:**
+**You can also go full circle and use it as shell application in your gradle script:**
 
 ```groovy
 task zPublish(type: Exec, group: '_Plugin', dependsOn: uberJar) {

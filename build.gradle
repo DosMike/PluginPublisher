@@ -1,7 +1,5 @@
-import org.gradle.api.artifacts.ProjectDependency
-
 plugins {
-    id 'java'
+    id 'java-library'
     id 'idea'
     id 'maven'
     id 'java-gradle-plugin'
@@ -25,19 +23,35 @@ dependencies {
 
     compileOnly 'org.jetbrains:annotations:16.0.2'
 
+//    javadocs https://docs.gradle.org/5.6.4/javadoc/index.html
+    compileOnly gradleApi()
+
     compile "org.apache.logging.log4j:log4j-core:2.13.0"
     compile "org.apache.logging.log4j:log4j-api:2.13.0"
     compile 'net.dv8tion:JDA:4.1.1_105'
     compile 'com.google.code.gson:gson:2.8.6'
 
-//    javadocs https://docs.gradle.org/5.6.4/javadoc/index.html
-    compile gradleApi();
 }
 
-//test {
-//    maxParallelForks 1 // these really need to run in sequence since i'm not using a testing framework to fake net traffic
-//    useJUnitPlatform()
-//}
+
+def isZipArchive(it) {
+    def fileSignature = 0
+    file(it).newDataInputStream().withCloseable {is->
+        fileSignature = is.readInt()
+    }
+    return fileSignature == 0x504B0304 || fileSignature == 0x504B0506 || fileSignature == 0x504B0708
+}
+jar {
+    manifest {
+        attributes 'Main-Class': 'de.dosmike.sponge.pluginpublisher.Executable'
+    }
+    from {
+        project.configurations.compile
+                .filter{ !project.configurations.compileOnly.contains(it) }
+                .filter{ it.exists() }
+                .collect { (it.isDirectory() || !isZipArchive(it)) ? it : zipTree(it) }
+    }
+}
 
 // as gradle plugin
 gradlePlugin {

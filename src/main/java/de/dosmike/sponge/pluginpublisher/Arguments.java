@@ -1,105 +1,101 @@
 package de.dosmike.sponge.pluginpublisher;
 
-import de.dosmike.sponge.pluginpublisher.gradle.GradleConfiguration;
+import de.dosmike.sponge.pluginpublisher.tasks.DiscordConfiguration;
+import de.dosmike.sponge.pluginpublisher.tasks.GitConfiguration;
+import de.dosmike.sponge.pluginpublisher.tasks.OreConfiguration;
+import de.dosmike.sponge.pluginpublisher.tasks.TaskFunctors;
 
-import java.awt.*;
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Arguments {
 
-    public static String gitAPIKey = null;
-    public static String gitSlug = null;
-    public static String gitTag = null;
-    public static String gitTagFull = null;
-    public static String gitCommitish = "master";
-    public static List<Path> gitAssets = new LinkedList<>();
-    public static String oreProject = null;
-    public static String oreChannel = "Release";
-    public static String oreAPIKey = null;
-    public static Path oreAsset = null;
-    public static String discordAPIKey = null;
-    public static String discordServer = null;
-    public static String discordChannel = null;
-    public static String discordHeader = null;
-    public static String releaseDescriptionString; // user input if no file was specified
+	static GitConfiguration git;
+	static OreConfiguration ore;
+	static DiscordConfiguration discord;
 
-    public static boolean useGitHub() {
-        return gitAPIKey != null && gitSlug != null && gitTag != null;
-    }
-    public static boolean useOre() {
-        return oreAPIKey != null && oreProject != null && oreAsset != null;
-    }
-    public static boolean useDiscord() {
-        return discordAPIKey != null && discordServer != null && discordChannel != null;
-    }
+	public static boolean useGitHub() {
+		return git.usable();
+	}
+
+	public static boolean useOre() {
+		return ore.usable();
+	}
+
+	public static boolean useDiscord() {
+		return discord.usable();
+	}
 
     /** @throws IllegalArgumentException if args are critically invalid */
     /** @throws java.io.FileNotFoundException if args specifies a non-existent asset */
     public static void parse(String[] args) throws IllegalArgumentException, FileNotFoundException {
-        for (int i = 0; i < args.length; i+=2) {
-            switch (args[i]) {
-                case "--gk":
-                    gitAPIKey = args[i+1];
-                    if (System.getenv(gitAPIKey)==null) throw new IllegalArgumentException("The environment variable --gk "+gitAPIKey+" is missing");
-                    break;
-                case "--gs":
-                    gitSlug = args[i+1];
-                    break;
-                case "--gt":
-                    gitTag = args[i+1];
-                    break;
-                case "--gn":
-                    gitTagFull = args[i+1];
-                    break;
+
+	    List<String> gitAssetsTmp = new LinkedList<>();
+	    String releaseDescriptionString = null;
+
+	    for (int i = 0; i < args.length; i += 2) {
+		    switch (args[i]) {
+			    case "--gk":
+				    if (System.getenv(args[i + 1]) == null)
+					    throw new IllegalArgumentException("The environment variable --gk " + args[i + 1] + " is missing");
+				    git.setApiKey(System.getenv(args[i + 1]));
+				    break;
+			    case "--gs":
+				    git.setSlug(args[i + 1]);
+				    break;
+			    case "--gt":
+				    git.setTag(args[i + 1]);
+				    break;
+			    case "--gn":
+				    git.setTagFull(args[i + 1]);
+				    break;
                 case "--gc":
-                    gitCommitish = args[i+1];
-                    break;
-                case "--ga": {
-                    Path path = Paths.get(args[i + 1]);
-                    if (Files.notExists(path))
-                        throw new FileNotFoundException("Could not find Git asset: " + args[i + 1]);
-                    gitAssets.add(path);
-                    break;
-                }
-                case "--ok":
-                    oreAPIKey = args[i+1];
-                    if (System.getenv(oreAPIKey)==null) throw new IllegalArgumentException("The environment variable --ok "+oreAPIKey+" is missing");
-                    break;
-                case "--op":
-                    oreProject = args[i+1];
-                    break;
-                case "--oc":
-                    oreChannel = args[i+1];
-                    break;
-                case "--oa": {
-                    Path path = Paths.get(args[i + 1]);
-                    if (Files.notExists(path))
-                        throw new FileNotFoundException("Could not find Ore asset: "+ args[i + 1]);
-                    oreAsset = path;
-                    break;
-                }
-                case "--dk":
-                    discordAPIKey = args[i+1];
-                    if (System.getenv(discordAPIKey)==null) throw new IllegalArgumentException("The environment variable --dk "+discordAPIKey+" is missing");
-                    break;
-                case "--ds":
-                    discordServer = args[i+1];
-                    break;
-                case "--dc":
-                    discordChannel = args[i+1];
-                    break;
-                case "--dh":
-                    discordHeader = args[i+1];
-                    break;
+	                git.setCommitish(args[i + 1]);
+	                break;
+			    case "--ga": {
+				    Path path = Paths.get(args[i + 1]);
+				    if (Files.notExists(path))
+					    throw new FileNotFoundException("Could not find Git asset: " + args[i + 1]);
+				    gitAssetsTmp.add(args[i + 1]);
+				    break;
+			    }
+			    case "--ok":
+				    if (System.getenv(args[i + 1]) == null)
+					    throw new IllegalArgumentException("The environment variable --ok " + args[i + 1] + " is missing");
+				    ore.setApiKey(System.getenv(args[i + 1]));
+				    break;
+			    case "--op":
+				    ore.setProject(args[i + 1]);
+				    break;
+			    case "--oc":
+				    ore.setChannel(args[i + 1]);
+				    break;
+			    case "--oa": {
+				    Path path = Paths.get(args[i + 1]);
+				    if (Files.notExists(path))
+					    throw new FileNotFoundException("Could not find Ore asset: " + args[i + 1]);
+				    ore.setAsset(args[i + 1]);
+				    break;
+			    }
+			    case "--dk":
+				    if (System.getenv(args[i + 1]) == null)
+					    throw new IllegalArgumentException("The environment variable --dk " + args[i + 1] + " is missing");
+				    discord.setApiKey(System.getenv(args[i + 1]));
+				    break;
+			    case "--ds":
+				    discord.setServer(args[i + 1]);
+				    break;
+			    case "--dc":
+				    discord.setChannel(args[i + 1]);
+				    break;
+			    case "--dh":
+				    discord.setHeader(args[i + 1]);
+				    break;
                 case "--desc": {
                     Path descFile = Paths.get(args[i+1]);
                     if (Files.notExists(descFile))
@@ -110,95 +106,22 @@ public class Arguments {
                         throw new IllegalArgumentException("Could not read the description file", e);
                     }
                 }
-                case "-?":
-                case "--help":
-                case "/?":
-                    printHelp();
-                    System.exit(0);
-                default:
-                    throw new IllegalArgumentException("Unsupported Argument: " + args[i]);
-            }
-        }
-        validate(false);
-    }
+			    case "-?":
+			    case "--help":
+			    case "/?":
+				    printHelp();
+				    System.exit(0);
+			    default:
+				    throw new IllegalArgumentException("Unsupported Argument: " + args[i]);
+		    }
+	    }
 
-    public static void fromGradleConfiguration(GradleConfiguration config) {
-        gitAPIKey = config.gitAPIKey;
-        gitSlug = config.gitSlug;
-        gitTag = config.gitTag;
-        gitTagFull = config.gitTagFull;
-        gitCommitish = config.gitCommitish;
-        gitAssets = Arrays.asList(config.gitAssets);
-        oreProject = config.oreProject;
-        oreChannel = config.oreChannel;
-        oreAPIKey = config.oreAPIKey;
-        oreAsset = config.oreAsset;
-        discordAPIKey = config.discordAPIKey;
-        discordServer = config.discordServer;
-        discordChannel = config.discordChannel;
-        discordHeader = config.discordHeader;
-        releaseDescriptionString = config.releaseDescriptionString;
-        validate(true);
-    }
-
-    public static void validate(boolean throwDescriptionNull) {
-        //validate args read
-        if (gitTagFull == null && gitTag != null) gitTagFull = "Automatic Release " + gitTag;
-        if (gitAPIKey != null || gitTag != null || gitSlug != null) {
-            if (gitAPIKey == null)
-                throw new IllegalArgumentException("Missing Git API Key");
-            if (gitTag == null)
-                throw new IllegalArgumentException("Missing Git Commitish");
-            if (gitSlug == null)
-                throw new IllegalArgumentException("Missing Git Project Slug");
-        }
-        if (oreAPIKey != null || oreProject != null || oreAsset != null) {
-            if (oreAPIKey == null)
-                throw new IllegalArgumentException("Missing Ore API Key");
-            if (oreProject == null)
-                throw new IllegalArgumentException("Missing Ore Project Slug");
-            if (oreAsset == null)
-                throw new IllegalArgumentException("Missing Ore Asset Path");
-        }
-        if (discordAPIKey != null || discordServer != null || discordChannel != null) {
-            if (discordAPIKey == null)
-                throw new IllegalArgumentException("Missing Discord API Key");
-            if (discordServer == null)
-                throw new IllegalArgumentException("Missing Discord Server ID");
-            if (discordChannel == null)
-                throw new IllegalArgumentException("Missing Discord Channel ID");
-        }
-        if (releaseDescriptionString == null) {
-            if (throwDescriptionNull)
-                throw new IllegalArgumentException("Missing Description");
-            if (Desktop.isDesktopSupported()) {
-                TextInputPrompt prompt = new TextInputPrompt("Release Description", "<html>Please enter the Release description.<br>The text you input supports the Markdown syntax");
-                prompt.waitInput();
-                releaseDescriptionString = prompt.getResult();
-                if (releaseDescriptionString == null)
-                    //The application was cancelled orderly
-                    System.exit(0);
-            } else {
-                System.out.println("End input with <new line>.<new line> (like E-Mails)");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                try {
-                    String line;
-                    boolean newline = false;
-                    StringBuilder builder = new StringBuilder();
-                    while (!".".equals(line = reader.readLine()) && line != null) {
-                        if (newline) builder.append("\n");
-                        else newline = true;
-                        builder.append(line);
-                    }
-                    releaseDescriptionString = builder.toString();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } //unlikely?
-            }
-            releaseDescriptionString = releaseDescriptionString.trim();
-            if (releaseDescriptionString.isEmpty())
-                throw new IllegalArgumentException("The release description is not allowed to be empty");
-        }
+	    if (!gitAssetsTmp.isEmpty())
+		    git.setAssets(gitAssetsTmp.toArray(new String[0]));
+	    releaseDescriptionString = TaskFunctors.validateReleaseDescription(releaseDescriptionString, false);
+	    git.setDescription(releaseDescriptionString);
+	    ore.setDescription(releaseDescriptionString);
+	    discord.setDescription(releaseDescriptionString);
     }
 
     public static void printHelp() {

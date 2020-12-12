@@ -1,18 +1,21 @@
 package de.dosmike.sponge.pluginpublisher.gradle;
 
-import de.dosmike.sponge.pluginpublisher.Arguments;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 public class PluginPublisherPlugin implements Plugin<Project> {
 
-	final static String ConfigurationName = "PluginPublisher";
-	final static String TaskName = "PublishPlugin";
+	final static String TaskNameGit = "PublishToGitHub";
+	final static String TaskNameOre = "PublishToOre";
+	final static String TaskNameDiscord = "NotifyDiscord";
+	final static String TaskNameDiscord2 = "TerminateDiscord";
 
 	@Override
 	public void apply(Project project) {
-		GradleConfiguration config = project.getExtensions().create(ConfigurationName, GradleConfiguration.class);
-		PublishTask task = project.getTasks().create(TaskName, PublishTask.class);
-		task.doFirst((t) -> Arguments.fromGradleConfiguration(config));
+		project.getTasks().create(TaskNameGit, PublishToGitTask.class);
+		project.getTasks().create(TaskNameOre, PublishToOreTask.class);
+		project.getTasks().create(TaskNameDiscord, NotifyDiscordTask.class);
+		project.getTasks().create(TaskNameDiscord2, TerminateDiscordConnectionTask.class);
 	}
+
 }
