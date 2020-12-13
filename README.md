@@ -6,12 +6,12 @@ Each component is optional and can be skipped.
 
 You can run this tool as Gradle plugin with a hand full of Tasks or as command line tool.
 
-**Please read the page on [How to set parts up](/DosMike/PluginPublisher/wiki/Setup)**
+**Please read the page on [How to set parts up](https://github.com/DosMike/PluginPublisher/wiki/Setup)**
 
 Once you're done you can decide on how to use it:
 
-* with [gradle](/DosMike/PluginPublisher/wiki/Gradle-Plugin) or
-* as [command line tool](/DosMike/PluginPublisher/wiki/Command-Line-Tool).
+* with [gradle](https://github.com/DosMike/PluginPublisher/wiki/Gradle-Plugin) or
+* as [command line tool](https://github.com/DosMike/PluginPublisher/wiki/Command-Line-Tool).
 
 # License
 
