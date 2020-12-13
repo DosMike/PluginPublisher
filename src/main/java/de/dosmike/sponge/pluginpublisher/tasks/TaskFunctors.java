@@ -13,12 +13,11 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.security.auth.login.LoginException;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URL;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -113,6 +112,34 @@ public class TaskFunctors {
 
 	public static void runDiscordTask(DiscordConfiguration discord) throws TaskRunException {
 		discord.validate();
+
+		String fullMessage = (discord.header != null) ? (discord.header + "\n" + discord.description) : discord.description;
+		JsonObject payload = new JsonObject();
+		payload.addProperty("content", fullMessage);
+		HttpsURLConnection con = null;
+		try {
+			con = (HttpsURLConnection) new URL(discord.getWebHook()).openConnection();
+			con.setRequestMethod("POST");
+			con.setDoOutput(true);
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("User-Agent", "PluginPublisherPlugin/1.0.2 (by DosMike#4103 at github/DosMike/PluginPublisher)");
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
+			bw.write(payload.toString());
+			bw.flush();
+			bw.close();
+			if (con.getResponseCode() < 200 || con.getResponseCode() >= 400)
+				throw new TaskRunException("Discord API refused the WebHook: " + con.getResponseCode() + " " + con.getResponseMessage());
+
+		} catch (IOException e) {
+			throw new TaskRunException("The Discord WebHook seems to be broken", e);
+		} finally {
+			if (con != null) con.disconnect();
+		}
+	}
+
+	public static void runDiscordTask(DiscordBotConfiguration discord) throws TaskRunException {
+		discord.validate();
+
 		if (jda == null || !activeToken.equals(discord.getApiKey())) {
 			if (jda != null) {
 				terminateJDA();
@@ -158,6 +185,7 @@ public class TaskFunctors {
 		}
 		String fullMessage = (header != null) ? (header + "\n" + discord.description) : discord.description;
 		channel.sendMessage(fullMessage).complete();
+
 	}
 
 	public static void terminateJDA() {

@@ -2,34 +2,16 @@ package de.dosmike.sponge.pluginpublisher.tasks;
 
 public class DiscordConfiguration {
 
-	String apiKey = null;
-	String server = null;
-	String channel = null;
+	String webHook = null;
 	String header = null;
 	String description = null;
 
-	public String getApiKey() {
-		return apiKey;
+	public String getWebHook() {
+		return webHook;
 	}
 
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
-	}
-
-	public String getServer() {
-		return server;
-	}
-
-	public void setServer(String server) {
-		this.server = server;
-	}
-
-	public String getChannel() {
-		return channel;
-	}
-
-	public void setChannel(String channel) {
-		this.channel = channel;
+	public void setWebHook(String webHook) {
+		this.webHook = webHook;
 	}
 
 	public String getHeader() {
@@ -49,17 +31,13 @@ public class DiscordConfiguration {
 	}
 
 	public boolean usable() {
-		return apiKey != null && server != null && channel != null;
+		return webHook != null;
 	}
 
 	void validate() {
-		if (apiKey != null || server != null || channel != null) {
-			if (apiKey == null)
-				throw new IllegalArgumentException("Missing Discord API Key");
-			if (server == null)
-				throw new IllegalArgumentException("Missing Discord Server ID");
-			if (channel == null)
-				throw new IllegalArgumentException("Missing Discord Channel ID");
-		}
+		if (webHook == null)
+			throw new IllegalArgumentException("Missing Discord WebHook URL");
+		if (!webHook.startsWith("https://discord.com/api/webhooks/"))
+			throw new IllegalArgumentException("The provided URL is not a Discord WebHook URL");
 	}
 }

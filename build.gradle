@@ -1,9 +1,15 @@
+buildscript {
+    dependencies {
+        classpath files('build/libs/PluginPublisher-1.0.2.jar');
+    }
+}
 plugins {
     id 'java-library'
     id 'idea'
     id 'maven'
     id 'java-gradle-plugin'
 }
+apply plugin: de.dosmike.sponge.pluginpublisher.gradle.PluginPublisherPlugin
 
 group 'com.github.dosmike'
 version '1.0.2'
@@ -33,6 +39,11 @@ dependencies {
 
 }
 
+task notif(type: de.dosmike.sponge.pluginpublisher.gradle.NotifyDiscordTask) {
+    configuration.webHook = 'https://discord.com/api/webhooks/787621175567843330/hkNHn0y_LpKtFdbJ6vIUTPa56qcZtOD2By3ILALFKgpWIURX2uvNKq5Q9pfLmU7dkIv9';
+    configuration.header = "Just a header @everyone"
+    configuration.description = "A new version just released, joy"
+}
 
 def isZipArchive(it) {
     def fileSignature = 0
