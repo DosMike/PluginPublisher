@@ -1,4 +1,5 @@
 plugins {
+    id "com.gradle.plugin-publish" version "0.12.0"
     id 'java-library'
     id 'idea'
     id 'maven'
@@ -6,10 +7,9 @@ plugins {
 }
 
 group 'com.github.dosmike'
-version '1.0.2'
+version '1.1.0'
 
 repositories {
-    mavenCentral()
     jcenter()
 }
 
@@ -44,20 +44,43 @@ jar {
     manifest {
         attributes 'Main-Class': 'de.dosmike.sponge.pluginpublisher.Executable'
     }
+}
+
+task shadowDeps (type:Zip) {
+    // this might not generate the most beautiful shadow jar, but it's the only way i got it to work with as a
+    // separate task that does not run with :build
+    archiveClassifier = 'shadow'
+    archiveExtension = 'jar'
+
+    println 'Packing dependencies'
     from {
         project.configurations.compile
                 .filter{ !project.configurations.compileOnly.contains(it) }
                 .filter{ it.exists() }
                 .collect { (it.isDirectory() || !isZipArchive(it)) ? it : zipTree(it) }
     }
+    from zipTree(jar.archiveFile)
 }
-
 // as gradle plugin
 gradlePlugin {
     plugins {
         simplePlugin {
             id = project.group+'.'+project.name
             implementationClass = 'de.dosmike.sponge.pluginpublisher.gradle.PluginPublisherPlugin'
+        }
+    }
+}
+// gradle plugin repo
+pluginBundle {
+    website = 'https://github.com/DosMike/PluginPublisher/'
+    vcsUrl = 'https://github.com/DosMike/PluginPublisher/'
+    description = 'Gradle Plugin to push Plugin Releases onto GitHub, Ore and notify Discord channels'
+    tags = ['plugin', 'minecraft', 'spongepowered', 'ore', 'discord', 'github']
+
+    plugins {
+        simplePlugin {
+            // id is captured from java-gradle-plugin configuration
+            displayName = 'Unofficial Plugin Publisher for SpongePowered Projects'
         }
     }
 }
