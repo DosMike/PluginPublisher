@@ -1,16 +1,19 @@
 plugins {
-    id 'java'
+    id "com.gradle.plugin-publish" version "0.12.0"
+    id 'java-library'
     id 'idea'
     id 'maven'
+    id 'java-gradle-plugin'
 }
 
 group 'com.github.dosmike'
-version '1.0.2'
+version '1.1.0'
 
 repositories {
-    mavenCentral()
     jcenter()
 }
+
+idea.module.downloadJavadoc = true
 
 dependencies {
 //    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
@@ -20,6 +23,9 @@ dependencies {
 
     compileOnly 'org.jetbrains:annotations:16.0.2'
 
+//    javadocs https://docs.gradle.org/5.6.4/javadoc/index.html
+    compileOnly gradleApi()
+
     compile "org.apache.logging.log4j:log4j-core:2.13.0"
     compile "org.apache.logging.log4j:log4j-api:2.13.0"
     compile 'net.dv8tion:JDA:4.1.1_105'
@@ -27,10 +33,57 @@ dependencies {
 
 }
 
-//test {
-//    maxParallelForks 1 // these really need to run in sequence since i'm not using a testing framework to fake net traffic
-//    useJUnitPlatform()
-//}
+def isZipArchive(it) {
+    def fileSignature = 0
+    file(it).newDataInputStream().withCloseable {is->
+        fileSignature = is.readInt()
+    }
+    return fileSignature == 0x504B0304 || fileSignature == 0x504B0506 || fileSignature == 0x504B0708
+}
+jar {
+    manifest {
+        attributes 'Main-Class': 'de.dosmike.sponge.pluginpublisher.Executable'
+    }
+}
+
+task shadowDeps (type:Zip) {
+    // this might not generate the most beautiful shadow jar, but it's the only way i got it to work with as a
+    // separate task that does not run with :build
+    archiveClassifier = 'shadow'
+    archiveExtension = 'jar'
+
+    println 'Packing dependencies'
+    from {
+        project.configurations.compile
+                .filter{ !project.configurations.compileOnly.contains(it) }
+                .filter{ it.exists() }
+                .collect { (it.isDirectory() || !isZipArchive(it)) ? it : zipTree(it) }
+    }
+    from zipTree(jar.archiveFile)
+}
+// as gradle plugin
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = project.group+'.'+project.name
+            implementationClass = 'de.dosmike.sponge.pluginpublisher.gradle.PluginPublisherPlugin'
+        }
+    }
+}
+// gradle plugin repo
+pluginBundle {
+    website = 'https://github.com/DosMike/PluginPublisher/'
+    vcsUrl = 'https://github.com/DosMike/PluginPublisher/'
+    description = 'Gradle Plugin to push Plugin Releases onto GitHub, Ore and notify Discord channels'
+    tags = ['plugin', 'minecraft', 'spongepowered', 'ore', 'discord', 'github']
+
+    plugins {
+        simplePlugin {
+            // id is captured from java-gradle-plugin configuration
+            displayName = 'Unofficial Plugin Publisher for SpongePowered Projects'
+        }
+    }
+}
 
 //Rest is here in order to use this project as dependency (taken from jitpack example)
 task sourcesJar(type: Jar, dependsOn: classes) {
