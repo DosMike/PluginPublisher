@@ -3,16 +3,13 @@ package de.dosmike.sponge.oreapi;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.dosmike.sponge.oreapi.v2.*;
-import de.dosmike.sponge.utils.Base64StreamEncoder;
 import de.dosmike.sponge.utils.CachingCollection;
-import okhttp3.MultipartBody;
 import org.jetbrains.annotations.Nullable;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -39,13 +36,19 @@ import java.util.regex.Pattern;
  */
 public class OreApiV2 implements AutoCloseable {
 
+    private static final String UserAgent = "PluginPublisher/1.1.0 (by DosMike)";
+
     private OreSession session;
     private RateLimiter limiter;
+
     public RateLimiter getRateLimiter() {
         return limiter;
     }
-    /** shorthand for {@link RateLimiter#waitFor(Supplier)}.<br>
-     * API calls return optionals, so does waitFor. This method automatically unboxes one optional */
+
+    /**
+     * shorthand for {@link RateLimiter#waitFor(Supplier)}.<br>
+     * API calls return optionals, so does waitFor. This method automatically unboxes one optional
+     */
     public <T> Optional<T> waitFor(Supplier<Optional<T>> task) {
         return limiter.waitFor(task).orElseGet(Optional::empty);
     }
@@ -77,24 +80,33 @@ public class OreApiV2 implements AutoCloseable {
     public static long superTimeParse(String time) {
         try {
             return timestampParser.parse(time).getTime();
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         try {
             return timestampParser2.parse(time).getTime();
-        } catch (Exception ignore) {}
-        throw new RuntimeException("Could not parse time \""+time+"\"");
+        } catch (Exception ignore) {
+        }
+        throw new RuntimeException("Could not parse time \"" + time + "\"");
     }
+
     private static JsonParser parser = new JsonParser();
     private static final Pattern paginationPattern = Pattern.compile("limit=[1-9][0-9]*&offset=[0-9]+");
 
     private static HttpsURLConnection createConnection(String endpoint) throws IOException {
-        HttpsURLConnection connection = (HttpsURLConnection) new URL("https://ore.spongepowered.org/api/v2"+endpoint).openConnection();
+        return createConnection(endpoint, "application/json");
+    }
+
+    private static HttpsURLConnection createConnection(String endpoint, String contentType) throws IOException {
+        HttpsURLConnection connection = (HttpsURLConnection) new URL("https://ore.spongepowered.org/api/v2" + endpoint).openConnection();
         connection.setInstanceFollowRedirects(true);
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(5000);
-        connection.setRequestProperty("User-Agent", "OreGet (by DosMike)/1.0");
-        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("User-Agent", UserAgent);
+        if (contentType != null)
+            connection.setRequestProperty("Content-Type", contentType);
         return connection;
     }
+
     private static JsonObject parseJson(HttpsURLConnection connection) throws IOException {
         return parser.parse(new InputStreamReader(connection.getInputStream())).getAsJsonObject();
     }
@@ -243,31 +255,18 @@ public class OreApiV2 implements AutoCloseable {
         try {
             String boundary="--------------------ENTRY_SEPARATOR_"+ UUID.randomUUID().toString();
             String jsonPluginInfo = info.toJson().toString();
-            System.out.println(jsonPluginInfo);
             String headersEntry1 = "Content-Disposition: form-data; name=\"plugin-info\"\r\n" +
-                    "Content-Type: application/json;charset=utf-8\r\n" +
+                    "Content-Type: application/json\r\n" +
                     "\r\n";
-            long fileSize = Files.size(file);
-            long fileSizeBase64 = (fileSize/3+(/*ceil*/ fileSize%3>0 ? 1 : 0))>>2; //see wikipedia for the formula
             String fileName = file.getFileName().toString(), fileNameASCII = fileName.replace('"','_');
-            String headersEntry2 = "Content-Disposition: form-data; name=\"plugin-file\"; filename=\""+fileNameASCII+"\"; filename*=UTF-8''"+URLEncoder.encode(fileName, "UTF-8")+"\r\n" +
-                    "Content-Type: application/octet-stream\r\n" +
-                    "Content-Transfer-Encoding: base64\r\n" +
+            String headersEntry2 = "Content-Disposition: form-data; name=\"plugin-file\"; filename=\"" + fileNameASCII + "\"; filename*=UTF-8''" + URLEncoder.encode(fileName, "UTF-8") + "\r\n" +
+                    "Content-Type: " + Files.probeContentType(file) + "\r\n" +
                     "\r\n";
-            long length =
-                    3 * (boundary.getBytes(StandardCharsets.UTF_8).length+4) + //number of content separators
-                    headersEntry1.getBytes(StandardCharsets.UTF_8).length +
-                    jsonPluginInfo.getBytes(StandardCharsets.UTF_8).length + 2 + //the +2 is due to a required line termination after the content
-                    headersEntry2.getBytes(StandardCharsets.UTF_8).length +
-                    fileSizeBase64 + 2; //the +2 is due to a required line termination after the content
-
-            String endpoint = "/projects/"+URLEncoder.encode(pluginId,"UTF-8")+"/versions";
-            HttpsURLConnection connection = session.authenticate(createConnection(endpoint));
+            String endpoint = "/projects/" + URLEncoder.encode(pluginId, "UTF-8") + "/versions";
+            HttpsURLConnection connection = session.authenticate(createConnection(endpoint, "multipart/form-data; boundary="+boundary));
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setDoInput(true);
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary="+boundary);
-            connection.setRequestProperty("Content-Length", String.valueOf(length));
 
             OutputStreamWriter osw = new OutputStreamWriter(connection.getOutputStream());
             osw.write("--"+boundary+"\r\n");
@@ -276,19 +275,9 @@ public class OreApiV2 implements AutoCloseable {
             osw.write("--"+boundary+"\r\n");
             osw.write(headersEntry2);
             osw.flush();
-            InputStream fis = Files.newInputStream(file);
-//            Base64.getEncoder().wrap(connection.getOutputStream());
-            // ^ can only write padding by closing the stream
-            OutputStream base64Stream = new Base64StreamEncoder(connection.getOutputStream());
-            byte[] buffer = new byte[1024]; int r, count=0;
-            while((r=fis.read(buffer))>=0) {
-                base64Stream.write(buffer,0,r);
-                count+=r;
-                System.out.print("Uploading... "+count+"/"+fileSize+" bytes\r");
-            }
-            base64Stream.flush();
+            Files.copy(file, connection.getOutputStream());
             osw.write("\r\n");
-            osw.write("--"+boundary+"--");
+            osw.write("--" + boundary + "--\r\n");
             osw.flush();
 
             System.out.println("Upload Complete                                            ");

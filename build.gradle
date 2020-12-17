@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.github.dosmike'
-version '1.1.0'
+version '1.1.1'
 
 repositories {
     jcenter()
@@ -46,7 +46,7 @@ jar {
     }
 }
 
-task shadowDeps (type:Zip) {
+task shadowDeps (type:Zip, dependsOn: jar) {
     // this might not generate the most beautiful shadow jar, but it's the only way i got it to work with as a
     // separate task that does not run with :build
     archiveClassifier = 'shadow'
