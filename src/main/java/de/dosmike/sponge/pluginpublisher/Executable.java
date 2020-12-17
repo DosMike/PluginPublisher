@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@Version(value="1.0.2", build="20030701")
+@Version(value = "1.1.1", build = "20121701")
 public class Executable {
 
     public static void main(String[] args) {
