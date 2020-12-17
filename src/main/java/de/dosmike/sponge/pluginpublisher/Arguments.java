@@ -12,10 +12,10 @@ import java.util.List;
 
 public class Arguments {
 
-	static GitConfiguration git;
-	static OreConfiguration ore;
-	static DiscordBotConfiguration discordBot;
-	static DiscordConfiguration discord;
+	static GitConfiguration git = new GitConfiguration();
+	static OreConfiguration ore = new OreConfiguration();
+	static DiscordBotConfiguration discordBot = new DiscordBotConfiguration();
+	static DiscordConfiguration discord = new DiscordConfiguration();
 
 	public static boolean useGitHub() {
 		return git.usable();
