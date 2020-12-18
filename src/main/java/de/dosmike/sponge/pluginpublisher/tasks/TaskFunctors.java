@@ -100,9 +100,22 @@ public class TaskFunctors {
 					.setChannel(ore.channel)
 					.build();
 			System.out.println("[ Ore ] Creating version...");
-			if (!oreApi.createVersion(ore.project, info, fileResolver.apply(ore.asset).iterator().next().toPath()).isPresent()) {
+			if (!oreApi.createVersion(ore.project, info, fileResolver.apply(ore.asset).iterator().next().toPath()))
 				throw new TaskRunException("Failed to create Ore release");
-			}
+		} finally {
+			if (oreApi != null) oreApi.destroySession();
+		}
+	}
+
+	public static JsonObject runOreProjectLookup(String oreApiKey, String projectId) throws TaskRunException {
+		if (projectId == null)
+			throw new NullPointerException("Plugin id to look up was null");
+		OreApiV2 oreApi = null;
+		try {
+			oreApi = new OreApiV2(oreApiKey);
+			return oreApi.getProjectById(projectId);
+		} catch (Throwable t) {
+			throw new TaskRunException("Could not fetch plugin metadata", t);
 		} finally {
 			if (oreApi != null) oreApi.destroySession();
 		}

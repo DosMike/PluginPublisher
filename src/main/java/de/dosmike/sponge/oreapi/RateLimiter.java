@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class RateLimiter extends Thread {
 
     List<RunnableFuture<?>> tasks = new LinkedList<>();
-    boolean running = true;
+    boolean running = false;
     private final Object taskMutex = new Object();
     private Limiter limit;
 
@@ -31,6 +31,7 @@ public class RateLimiter extends Thread {
 
     @Override
     public void run() {
+        running = true;
         boolean nowIdle;
         while(running) {
             RunnableFuture<?> task = null;

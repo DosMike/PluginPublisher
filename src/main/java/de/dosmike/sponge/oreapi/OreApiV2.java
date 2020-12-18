@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.dosmike.sponge.oreapi.v2.OreDeployVersionInfo;
 import de.dosmike.sponge.oreapi.v2.OreSession;
-import de.dosmike.sponge.oreapi.v2.OreVersion;
 import de.dosmike.sponge.pluginpublisher.Statics;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -30,7 +29,7 @@ import java.util.function.Supplier;
  */
 public class OreApiV2 implements AutoCloseable {
 
-    private OreSession session;
+    private static OreSession session = new OreSession();
     private RateLimiter limiter;
 
     /**
@@ -42,7 +41,6 @@ public class OreApiV2 implements AutoCloseable {
     }
     private String apiKey=null;
     public OreApiV2() {
-        session = new OreSession();
         limiter = new RateLimiter();
         limiter.start();
     }
@@ -111,18 +109,38 @@ public class OreApiV2 implements AutoCloseable {
         }
     }
 
-    /** This endpoint requires the permission <tt>create_version</tt>. To use this, please provide an ApiKey
-     * with appropriate permissions in the constructor. */
-    public Optional<OreVersion> createVersion(String pluginId, OreDeployVersionInfo info, Path file) {
+    public JsonObject getProjectById(String projectId) {
         authenticate();
         limiter.takeRequest();
         try {
-            String boundary="--------------------ENTRY_SEPARATOR_"+ UUID.randomUUID().toString();
+            String totalQuery = "/projects/" + URLEncoder.encode(projectId, "UTF-8");
+            HttpsURLConnection connection = session.authenticate(createConnection(totalQuery));
+            connection.setRequestMethod("GET");
+            connection.setDoInput(true);
+            if (connection.getResponseCode() < 200 || connection.getResponseCode() >= 400) {
+                if (connection.getResponseCode() != 404) tryPrintErrorBody(connection);
+                throw new RuntimeException("Could not fetch project: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            }
+            return parseJson(connection);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * This endpoint requires the permission <tt>create_version</tt>. To use this, please provide an ApiKey
+     * with appropriate permissions in the constructor.
+     */
+    public boolean createVersion(String pluginId, OreDeployVersionInfo info, Path file) {
+        authenticate();
+        limiter.takeRequest();
+        try {
+            String boundary = "--------------------ENTRY_SEPARATOR_" + UUID.randomUUID().toString();
             String jsonPluginInfo = info.toJson().toString();
             String headersEntry1 = "Content-Disposition: form-data; name=\"plugin-info\"\r\n" +
                     "Content-Type: application/json\r\n" +
                     "\r\n";
-            String fileName = file.getFileName().toString(), fileNameASCII = fileName.replace('"','_');
+            String fileName = file.getFileName().toString(), fileNameASCII = fileName.replace('"', '_');
             String headersEntry2 = "Content-Disposition: form-data; name=\"plugin-file\"; filename=\"" + fileNameASCII + "\"; filename*=UTF-8''" + URLEncoder.encode(fileName, "UTF-8") + "\r\n" +
                     "Content-Type: " + Files.probeContentType(file) + "\r\n" +
                     "\r\n";
@@ -150,10 +168,10 @@ public class OreApiV2 implements AutoCloseable {
                 throw new RuntimeException("API returned with "+connection.getResponseCode()+": "+connection.getResponseMessage());
             }
             JsonObject responseObject = JsonParser.parseReader(new InputStreamReader(connection.getInputStream())).getAsJsonObject();
-            return Optional.of(new OreVersion(responseObject));
+            return true;
         } catch (IOException e) {
 //            e.printStackTrace();
-            return Optional.empty();
+            return false;
         }
     }
 
