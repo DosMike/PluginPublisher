@@ -7,6 +7,7 @@ public class OreConfiguration {
 	String apiKey = null;
 	Object asset = null;
 	String description = null;
+	boolean createForumPost = true;
 
 	public String getProject() {
 		return project;
@@ -46,6 +47,14 @@ public class OreConfiguration {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public boolean isCreateForumPost() {
+		return createForumPost;
+	}
+
+	public void setCreateForumPost(boolean createForumPost) {
+		this.createForumPost = createForumPost;
 	}
 
 	public boolean usable() {

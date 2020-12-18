@@ -95,7 +95,7 @@ public class TaskFunctors {
 		try { //ore can create new sessions without visual prompt, so i'll just create a new one
 			oreApi = new OreApiV2(ore.apiKey);
 			OreDeployVersionInfo info = OreDeployVersionInfo.builder()
-					.setCreateForumPost(true)
+					.setCreateForumPost(ore.createForumPost)
 					.setDescription(ore.description)
 					.setChannel(ore.channel)
 					.build();
