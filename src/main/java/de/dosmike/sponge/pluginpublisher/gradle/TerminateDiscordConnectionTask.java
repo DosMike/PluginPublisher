@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskAction;
 public class TerminateDiscordConnectionTask extends DefaultTask {
 
 	@TaskAction
-	public void publish() throws TaskRunException {
+	public void terminate() throws TaskRunException {
 		TaskFunctors.terminateJDA();
 	}
 
