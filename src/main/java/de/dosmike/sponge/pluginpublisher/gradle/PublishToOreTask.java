@@ -15,6 +15,8 @@ public class PublishToOreTask extends DefaultTask {
      */
     @Input
     public Property<String> apiKey = getProject().getObjects().property(String.class);
+    @Input
+    public Property<String> projectId = getProject().getObjects().property(String.class);
     /**
      * Optional, defaults to <tt>Release</tt>
      */
@@ -34,6 +36,7 @@ public class PublishToOreTask extends DefaultTask {
     public void publish() throws TaskRunException {
         OreConfiguration configuration = new OreConfiguration();
         configuration.setApiKey(apiKey.get());
+        configuration.setProject(projectId.get());
         configuration.setChannel(channel.getOrElse("Release"));
         configuration.setCreateForumPost(createForumPost.getOrElse(true));
         configuration.setDescription(messageBody.get());

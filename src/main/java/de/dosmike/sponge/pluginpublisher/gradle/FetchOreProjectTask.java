@@ -13,13 +13,13 @@ public class FetchOreProjectTask extends DefaultTask {
 	@Input
 	public Property<String> apiKey = getProject().getObjects().property(String.class);
 	@Input
-	public Property<String> pluginId = getProject().getObjects().property(String.class);
+	public Property<String> projectId = getProject().getObjects().property(String.class);
 	@Input
 	public Property<JsonObject> projectData = getProject().getObjects().property(JsonObject.class);
 
 	@TaskAction
 	public void publish() throws TaskRunException {
-		projectData.set(TaskFunctors.runOreProjectLookup(apiKey.get(), pluginId.get()));
+		projectData.set(TaskFunctors.runOreProjectLookup(apiKey.get(), projectId.get()));
 	}
 
 }
