@@ -15,13 +15,14 @@ public class FetchOreProjectTask extends DefaultTask {
 	@Input
 	public Property<String> projectId = getProject().getObjects().property(String.class);
 
-	public Property<JsonObject> projectData = getProject().getObjects().property(JsonObject.class);
+	public Property<JsonObject> projectData = getProject().getObjects().property(JsonObject.class).value(new JsonObject());
 
 	@TaskAction
 	public void fetch() {
 		try {
 			projectData.set(TaskFunctors.runOreProjectLookup(apiKey.get(), projectId.get()));
 		} catch (Throwable t) {
+			t.printStackTrace();
 			projectData.set(new JsonObject());
 			throw new StopExecutionException(t.getMessage());
 		}
