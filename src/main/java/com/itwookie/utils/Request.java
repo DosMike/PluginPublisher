@@ -1,5 +1,7 @@
 package com.itwookie.utils;
 
+import de.dosmike.sponge.pluginpublisher.Statics;
+
 import java.io.IOException;
 import java.net.*;
 import java.util.HashMap;
@@ -121,7 +123,7 @@ public class Request {
         }
         HttpURLConnection connection = (HttpURLConnection) iurl.openConnection();
         connection.setRequestMethod(requestMethod);
-        requestHeaders.put("User-Agent", "HTTP Request Library/1.0 (Java/10) by DosMike");
+        requestHeaders.put("User-Agent", Statics.USER_AGENT);
         if (!paramsBody.isEmpty()) {
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
             requestHeaders.put("Content-Length", String.valueOf(squishAndEncodeParameters(paramsBody).getBytes().length));

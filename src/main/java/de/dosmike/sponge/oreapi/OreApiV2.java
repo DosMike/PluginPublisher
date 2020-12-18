@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import de.dosmike.sponge.oreapi.v2.OreDeployVersionInfo;
 import de.dosmike.sponge.oreapi.v2.OreSession;
 import de.dosmike.sponge.oreapi.v2.OreVersion;
+import de.dosmike.sponge.pluginpublisher.Statics;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -28,8 +29,6 @@ import java.util.function.Supplier;
  * implementation not relying on the SpongeAPI being available.
  */
 public class OreApiV2 implements AutoCloseable {
-
-    private static final String UserAgent = "PluginPublisher/1.1.0 (by DosMike)";
 
     private OreSession session;
     private RateLimiter limiter;
@@ -83,7 +82,7 @@ public class OreApiV2 implements AutoCloseable {
         connection.setInstanceFollowRedirects(true);
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(5000);
-        connection.setRequestProperty("User-Agent", UserAgent);
+        connection.setRequestProperty("User-Agent", Statics.USER_AGENT);
         if (contentType != null)
             connection.setRequestProperty("Content-Type", contentType);
         return connection;

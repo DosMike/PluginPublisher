@@ -122,7 +122,7 @@ public class TaskFunctors {
 			con.setRequestMethod("POST");
 			con.setDoOutput(true);
 			con.setRequestProperty("Content-Type", "application/json");
-			con.setRequestProperty("User-Agent", "PluginPublisherPlugin/1.0.2 (by DosMike#4103 at github/DosMike/PluginPublisher)");
+			con.setRequestProperty("User-Agent", Statics.USER_AGENT);
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
 			bw.write(payload.toString());
 			bw.flush();
