@@ -5,6 +5,8 @@ import de.dosmike.sponge.pluginpublisher.tasks.TaskRunException;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Version(value = "1.1.1", build = "20121701")
@@ -38,10 +40,10 @@ public class Executable {
         }
 
         if (Arguments.useGitHub())
-            TaskFunctors.runGitTask(Arguments.git, (strings -> Arrays.stream(strings).map(File::new).collect(Collectors.toSet())));
+            TaskFunctors.runGitTask(Arguments.git, Executable::toFiles);
 
         if (Arguments.useOre())
-            TaskFunctors.runOreTask(Arguments.ore, File::new);
+            TaskFunctors.runOreTask(Arguments.ore, Executable::toFiles);
 
         if (Arguments.useDiscordHook()) {
             TaskFunctors.runDiscordTask(Arguments.discord);
@@ -50,6 +52,14 @@ public class Executable {
             TaskFunctors.terminateJDA();
         }
 
+    }
+
+    private static List<File> toFiles(Object object) {
+        if (object.getClass().isArray()) {
+            return Arrays.stream(((Object[]) object)).map(x -> new File(x.toString())).collect(Collectors.toList());
+        } else {
+            return Collections.singletonList(new File(object.toString()));
+        }
     }
 
 }

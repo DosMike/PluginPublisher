@@ -5,7 +5,7 @@ public class OreConfiguration {
 	String project = null;
 	String channel = "release";
 	String apiKey = null;
-	String asset = null;
+	Object asset = null;
 	String description = null;
 
 	public String getProject() {
@@ -32,11 +32,11 @@ public class OreConfiguration {
 		this.apiKey = apiKey;
 	}
 
-	public String getAsset() {
+	public Object getAsset() {
 		return asset;
 	}
 
-	public void setAsset(String asset) {
+	public void setAsset(Object asset) {
 		this.asset = asset;
 	}
 

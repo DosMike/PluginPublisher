@@ -16,7 +16,7 @@ public class PublishToGitTask extends DefaultTask {
 	public void publish() throws TaskRunException {
 		if (!configuration.usable())
 			throw new TaskRunException("The task was not configured");
-		TaskFunctors.runGitTask(configuration, strings -> getProject().files((Object[]) strings));
+		TaskFunctors.runGitTask(configuration, object -> getProject().files(object));
 	}
 
 }

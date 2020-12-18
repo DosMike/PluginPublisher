@@ -7,7 +7,7 @@ public class GitConfiguration {
 	String tag = null;
 	String tagFull = null;
 	String commitish = "master";
-	String[] assets = new String[0];
+	Object assets = null;
 	String description = null;
 
 	public String getApiKey() {
@@ -50,20 +50,12 @@ public class GitConfiguration {
 		this.commitish = commitish;
 	}
 
-	public String[] getAssets() {
+	public Object getAssets() {
 		return assets;
 	}
 
-	public void setAssets(String[] assets) {
+	public void setAssets(Object assets) {
 		this.assets = assets;
-	}
-
-	public String getAssets(int index) {
-		return assets[index];
-	}
-
-	public void setAssets(int index, String value) {
-		assets[index] = value;
 	}
 
 	public String getDescription() {
