@@ -49,8 +49,8 @@ jar {
 task shadowDeps (type:Zip, dependsOn: jar) {
     // this might not generate the most beautiful shadow jar, but it's the only way i got it to work with as a
     // separate task that does not run with :build
-    archiveClassifier = 'shadow'
-    archiveExtension = 'jar'
+    archiveClassifier.set( 'shadow' )
+    archiveExtension.set( 'jar' )
 
     println 'Packing dependencies'
     from {
@@ -87,12 +87,12 @@ pluginBundle {
 
 //Rest is here in order to use this project as dependency (taken from jitpack example)
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier.set( 'sources' )
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier.set( 'javadoc' )
     from javadoc.destinationDir
 }
 
