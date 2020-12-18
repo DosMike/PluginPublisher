@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import de.dosmike.sponge.github.ReleaseAPI;
 import de.dosmike.sponge.oreapi.OreApiV2;
 import de.dosmike.sponge.oreapi.v2.OreDeployVersionInfo;
+import de.dosmike.sponge.pluginpublisher.Statics;
 import de.dosmike.sponge.pluginpublisher.TextInputPrompt;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -72,7 +73,7 @@ public class TaskFunctors {
 		return description;
 	}
 
-	public static void runGitTask(GitConfiguration git, Function<String[], Iterable<File>> fileResolver) throws TaskRunException {
+	public static void runGitTask(GitConfiguration git, Function<Object, Iterable<File>> fileResolver) throws TaskRunException {
 		git.validate();
 		try {
 			System.out.println("[ GitHub ] Creating Tag...");
@@ -88,18 +89,18 @@ public class TaskFunctors {
 		}
 	}
 
-	public static void runOreTask(OreConfiguration ore, Function<String, File> fileResolver) throws TaskRunException {
+	public static void runOreTask(OreConfiguration ore, Function<Object, Iterable<File>> fileResolver) throws TaskRunException {
 		ore.validate();
 		OreApiV2 oreApi = null;
 		try { //ore can create new sessions without visual prompt, so i'll just create a new one
 			oreApi = new OreApiV2(ore.apiKey);
 			OreDeployVersionInfo info = OreDeployVersionInfo.builder()
-					.setCreateForumPost(true)
+					.setCreateForumPost(ore.createForumPost)
 					.setDescription(ore.description)
 					.setChannel(ore.channel)
 					.build();
 			System.out.println("[ Ore ] Creating version...");
-			if (!oreApi.createVersion(ore.project, info, fileResolver.apply(ore.asset).toPath()).isPresent()) {
+			if (!oreApi.createVersion(ore.project, info, fileResolver.apply(ore.asset).iterator().next().toPath()).isPresent()) {
 				throw new TaskRunException("Failed to create Ore release");
 			}
 		} finally {
@@ -122,7 +123,7 @@ public class TaskFunctors {
 			con.setRequestMethod("POST");
 			con.setDoOutput(true);
 			con.setRequestProperty("Content-Type", "application/json");
-			con.setRequestProperty("User-Agent", "PluginPublisherPlugin/1.0.2 (by DosMike#4103 at github/DosMike/PluginPublisher)");
+			con.setRequestProperty("User-Agent", Statics.USER_AGENT);
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
 			bw.write(payload.toString());
 			bw.flush();

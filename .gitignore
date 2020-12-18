@@ -4,6 +4,7 @@ out/**
 *.iml
 *.jar
 *.bat
+!gradlew.bat
 .apikeys
 
 ## Gradle

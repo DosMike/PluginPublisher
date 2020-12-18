@@ -5,8 +5,9 @@ public class OreConfiguration {
 	String project = null;
 	String channel = "release";
 	String apiKey = null;
-	String asset = null;
+	Object asset = null;
 	String description = null;
+	boolean createForumPost = true;
 
 	public String getProject() {
 		return project;
@@ -32,11 +33,11 @@ public class OreConfiguration {
 		this.apiKey = apiKey;
 	}
 
-	public String getAsset() {
+	public Object getAsset() {
 		return asset;
 	}
 
-	public void setAsset(String asset) {
+	public void setAsset(Object asset) {
 		this.asset = asset;
 	}
 
@@ -46,6 +47,14 @@ public class OreConfiguration {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public boolean isCreateForumPost() {
+		return createForumPost;
+	}
+
+	public void setCreateForumPost(boolean createForumPost) {
+		this.createForumPost = createForumPost;
 	}
 
 	public boolean usable() {

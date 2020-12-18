@@ -16,7 +16,7 @@ public class PublishToOreTask extends DefaultTask {
 	public void publish() throws TaskRunException {
 		if (!configuration.usable())
 			throw new TaskRunException("The task was not configured");
-		TaskFunctors.runOreTask(configuration, string -> getProject().file(string));
+		TaskFunctors.runOreTask(configuration, object -> getProject().files(object));
 	}
 
 }

@@ -53,16 +53,16 @@ public class ReleaseAPI {
 	    });
 
 	    try {
-		    if (apiConnection.getResponseCode() != 201) {
-			    System.err.println("API returned with "+apiConnection.getResponseCode()+": "+apiConnection.getResponseMessage());
-			    BufferedReader br = new BufferedReader(new InputStreamReader(apiConnection.getErrorStream()));
-			    String line; while ((line = br.readLine())!=null) System.err.println(line);
-			    throw new RuntimeException();
-		    }
-		    JsonReader reader = gson.newJsonReader(new InputStreamReader(apiConnection.getInputStream()));
-		    JsonParser parser = new JsonParser();
-		    return parser.parse(reader).getAsJsonObject();
-	    } catch (IOException e) {
+			if (apiConnection.getResponseCode() != 201) {
+				System.err.println("API returned with " + apiConnection.getResponseCode() + ": " + apiConnection.getResponseMessage());
+				BufferedReader br = new BufferedReader(new InputStreamReader(apiConnection.getErrorStream()));
+				String line;
+				while ((line = br.readLine()) != null) System.err.println(line);
+				throw new RuntimeException();
+			}
+			JsonReader reader = gson.newJsonReader(new InputStreamReader(apiConnection.getInputStream()));
+			return JsonParser.parseReader(reader).getAsJsonObject();
+		} catch (IOException e) {
 		    System.err.println("Could not create release tag: "+e.getMessage());
 		    throw new RuntimeException();
 	    } finally {
