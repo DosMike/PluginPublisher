@@ -11,15 +11,15 @@ import org.gradle.api.tasks.TaskAction;
 public class NotifyDiscordBotTask extends DefaultTask {
 
     @Input
-    public Property<String> apiKey = getProject().getObjects().property(String.class);
+    final public Property<String> apiKey = getProject().getObjects().property(String.class);
     @Input
-    public Property<String> guildId = getProject().getObjects().property(String.class);
+    final public Property<String> guildId = getProject().getObjects().property(String.class);
     @Input
-    public Property<String> channelId = getProject().getObjects().property(String.class);
+    final public Property<String> channelId = getProject().getObjects().property(String.class);
     @Input
-    public Property<String> messageHeader = getProject().getObjects().property(String.class);
+    final public Property<String> messageHeader = getProject().getObjects().property(String.class);
     @Input
-    public Property<String> messageBody = getProject().getObjects().property(String.class);
+    final public Property<String> messageBody = getProject().getObjects().property(String.class);
 
     @TaskAction
     public void publish() throws TaskRunException {

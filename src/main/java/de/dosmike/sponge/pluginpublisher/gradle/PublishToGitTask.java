@@ -31,11 +31,11 @@ public class PublishToGitTask extends DefaultTask {
      * Optional, defaults to <tt>master</tt>
      */
     @Input
-    public Property<String> commitish = getProject().getObjects().property(String.class);
+    final public Property<String> commitish = getProject().getObjects().property(String.class);
     @Input
-    public Property<String> messageBody = getProject().getObjects().property(String.class);
+    final public Property<String> messageBody = getProject().getObjects().property(String.class);
     @Input
-    public Property<Object> uploadAssets = getProject().getObjects().property(Object.class);
+    final public Property<Object> uploadAssets = getProject().getObjects().property(Object.class);
 
     @TaskAction
     public void publish() throws TaskRunException {

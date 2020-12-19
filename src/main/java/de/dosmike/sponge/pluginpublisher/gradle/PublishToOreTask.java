@@ -14,23 +14,23 @@ public class PublishToOreTask extends DefaultTask {
      * Please make sure your token has the <tt>create_version</tt> permission
      */
     @Input
-    public Property<String> apiKey = getProject().getObjects().property(String.class);
+    final Property<String> apiKey = getProject().getObjects().property(String.class);
     @Input
-    public Property<String> projectId = getProject().getObjects().property(String.class);
+    final Property<String> projectId = getProject().getObjects().property(String.class);
     /**
      * Optional, defaults to <tt>Release</tt>
      */
     @Input
-    public Property<String> channel = getProject().getObjects().property(String.class);
+    final Property<String> channel = getProject().getObjects().property(String.class);
     /**
      * Optional, defaults to <tt>true</tt>
      */
     @Input
-    public Property<Boolean> createForumPost = getProject().getObjects().property(Boolean.class);
+    final public Property<Boolean> createForumPost = getProject().getObjects().property(Boolean.class);
     @Input
-    public Property<String> messageBody = getProject().getObjects().property(String.class);
+    final public Property<String> messageBody = getProject().getObjects().property(String.class);
     @Input
-    public Property<Object> uploadAsset = getProject().getObjects().property(Object.class);
+    final public Property<Object> uploadAsset = getProject().getObjects().property(Object.class);
 
     @TaskAction
     public void publish() throws TaskRunException {
