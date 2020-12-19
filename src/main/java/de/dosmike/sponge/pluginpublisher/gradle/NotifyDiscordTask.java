@@ -11,11 +11,11 @@ import org.gradle.api.tasks.TaskAction;
 public class NotifyDiscordTask extends DefaultTask {
 
     @Input
-    public Property<String> webHookUrl = getProject().getObjects().property(String.class);
+    final public Property<String> webHookUrl = getProject().getObjects().property(String.class);
     @Input
-    public Property<String> messageHeader = getProject().getObjects().property(String.class);
+    final public Property<String> messageHeader = getProject().getObjects().property(String.class);
     @Input
-    public Property<String> messageBody = getProject().getObjects().property(String.class);
+    final public Property<String> messageBody = getProject().getObjects().property(String.class);
 
     @TaskAction
     public void publish() throws TaskRunException {

@@ -39,7 +39,7 @@ public class OreSession {
     public HttpsURLConnection authenticate(HttpsURLConnection connection) {
         // Reversed from Network monitor because not documented:
         // Why not simply `OreApi SESSION`? You know it's supposed to be a session!?
-        connection.setRequestProperty("Authorization", "OreApi session="+session);
+        if (isValid()) connection.setRequestProperty("Authorization", "OreApi session=" + session);
         return connection;
     }
 
