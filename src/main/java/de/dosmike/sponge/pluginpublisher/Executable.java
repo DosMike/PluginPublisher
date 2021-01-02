@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Version(value = "1.2.1", build = "20121901")
+@Version(value = "1.2.2", build = "21010201")
 public class Executable {
 
     public static void main(String[] args) {
