@@ -19,6 +19,7 @@ import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -77,10 +78,11 @@ public class TaskFunctors {
 		git.validate();
 		try {
 			System.out.println("[ GitHub ] Creating Tag...");
+			Iterable<File> resolved = fileResolver.apply(git.assets);
 			ReleaseAPI githubRelease = new ReleaseAPI();
 			JsonObject releaseObject = githubRelease.createReleaseTag(git.apiKey, git.slug, git.tag, git.commitish, git.tagFull, git.description, false, false);
 			String uploadHere = releaseObject.get("upload_url").getAsString();
-			for (File file : fileResolver.apply(git.assets)) {
+			for (File file : resolved) {
 				System.out.println("[ GitHub ] Uploading asset " + file.getName() + "...");
 				githubRelease.uploadAsset(git.apiKey, uploadHere, file.toPath());
 			}
@@ -93,14 +95,15 @@ public class TaskFunctors {
 		ore.validate();
 		OreApiV2 oreApi = null;
 		try { //ore can create new sessions without visual prompt, so i'll just create a new one
+			System.out.println("[ Ore ] Creating version...");
+			Path resolved = fileResolver.apply(ore.asset).iterator().next().toPath();
 			oreApi = new OreApiV2(ore.apiKey);
 			OreDeployVersionInfo info = OreDeployVersionInfo.builder()
 					.setCreateForumPost(ore.createForumPost)
 					.setDescription(ore.description)
 					.setChannel(ore.channel)
 					.build();
-			System.out.println("[ Ore ] Creating version...");
-			if (!oreApi.createVersion(ore.project, info, fileResolver.apply(ore.asset).iterator().next().toPath()))
+			if (!oreApi.createVersion(ore.project, info, resolved))
 				throw new TaskRunException("Failed to create Ore release");
 		} finally {
 			if (oreApi != null) oreApi.destroySession();
