@@ -28,7 +28,7 @@ public class NotifyDiscordBotTask extends DefaultTask {
         configuration.setServer(guildId.get());
         configuration.setChannel(channelId.get());
         configuration.setHeader(messageHeader.getOrNull());
-        configuration.setChannel(messageBody.get());
+        configuration.setDescription(messageBody.get());
 
         if (!configuration.usable())
             throw new TaskRunException("The task was not configured");
